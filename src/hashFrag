@@ -18,6 +18,15 @@ def main():
     hashing_parser.add_argument('-o','--output_path',type=str,required=True,help="")
     hashing_parser.set_defaults(func=importlib.import_module("lsh_forest").run)
 
+    # blastn
+    hashing_parser = subparsers.add_parser("blastn")
+    hashing_parser.add_argument('-f','--fasta_path',type=str,required=True,help="")
+    hashing_parser.add_argument('-w','--word_size',type=int,default=11,help="")
+    hashing_parser.add_argument('-b','--blastdb_args',type=str,default=None,help="")
+    hashing_parser.add_argument('-B','--blastn_args',type=str,default=None,help="")
+    hashing_parser.add_argument('-o','--output_path',type=str,required=True,help="")
+    hashing_parser.set_defaults(func=importlib.import_module("blastn").run)
+
     # compute_recall (tuning)
     recall_parser = subparsers.add_parser("compute_recall")
     recall_parser.add_argument('-c','--collisions_path',type=str,required=True,help="")

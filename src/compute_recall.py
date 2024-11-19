@@ -23,7 +23,8 @@ def run(args):
         "FP":[],
         "TN":[],
         "FN":[],
-        "recall":[]
+        "recall":[],
+        "FPR":[]
     }
     for threshold in np.arange(df["sw"].min(),df["sw"].max()+args.step,args.step):
         above_threshold = df["sw"] >= threshold
@@ -38,6 +39,7 @@ def run(args):
         results_dict["FP"].append(fp)
         results_dict["TN"].append(tn)
         results_dict["recall"].append(tp/(tp+fn) if (tp+fn) > 0 else 0)
+        results_dict["FPR"].append(fp/(fp+tn) if (fp+tn) > 0 else 0)
 
     results_df = pd.DataFrame(results_dict)
     results_df.to_csv(args.output_path,compression="gzip",index=False)

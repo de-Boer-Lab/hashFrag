@@ -1,2 +1,4 @@
 /example_data/*.csv.gz
 /example_data/*.pbz2
+*.blastdb.*
+*.blastn.out
