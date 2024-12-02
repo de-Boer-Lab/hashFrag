@@ -1,6 +1,7 @@
 import bz2
 import gzip
 import pickle
+import subprocess
 from Bio import SeqIO,pairwise2
 
 def load_fasta_as_dictionary(path,idset=None):
@@ -139,4 +140,12 @@ def write_splits_to_file(train_split,test_split,path):
             handle.write(f"{seq_id},train\n")
         for seq_id in sorted(test_split):
             handle.write(f"{seq_id},test\n")
+    return
+
+def valdidate_subprocess_execution(process,command):
+    if process.returncode != 0:
+        print(f"Error executing the following command: {command}")
+        print(process.stderr.decode("utf-8"))
+        raise subprocess.CalledProcessError()
+    print(process.stdout.decode("utf-8"))
     return

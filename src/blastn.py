@@ -1,16 +1,8 @@
 import os
+import sys
 import gzip
 import subprocess
-from collections import defaultdict
 import utils.helper_functions as helper
-
-def valdidate_subprocess_execution(process,command):
-    if process.returncode != 0:
-        print(f"Error executing the following command: {command}")
-        print(process.stderr.decode("utf-8"))
-        raise subprocess.CalledProcessError()
-    print(process.stdout.decode("utf-8"))
-    return
 
 def run(args):
 
@@ -31,28 +23,34 @@ def run(args):
         if args.blastdb_args:
             command += args.blastdb_args
         process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
-        valdidate_subprocess_execution(process,command)
+        helper.valdidate_subprocess_execution(process,command)
+
+    print(f"BLAST DataBase construction finished and written to: {blastdb_path}")
+    
+    if args.exec_blastdb_only:
+        sys.exit(0)
 
     with gzip.open(args.fasta_path,"rb") as fasta:
         command = " ".join([
             "blastn",
-            "-task blastn",
             f"-db {blastdb_path}",
             f"-out {blastn_path}",
             f"-word_size {args.word_size}",
-            "-outfmt 6",
+            f"-gapopen {args.gapopen}",
+            f"-gapextend {args.gapextend}",
+            f"-penalty {args.penalty}",
+            f"-reward {args.reward}",
+            f"-max_target_seqs {args.max_target_seqs}",
+            f"-evalue {args.e_value}",
+            f"-dust {args.dust}",
+            f"-num_threads {args.threads}",
+            "-outfmt '6 std score positive gaps'",
+            "-strand plus",
             " "
         ])
         if args.blastn_args:
             command += args.blastn_args
         process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
-        valdidate_subprocess_execution(process,command)
-        
-    collisions_dict = defaultdict(list)
-    with open(blastn_path,"r") as handle:
-        for line in handle:
-            entry = line.strip().split("\t")
-            collisions_dict[entry[0]].append(entry[1])
-
-    helper.write_collisions_dictionary(collisions_dict,args.output_path)
-    print(f"BLASTn process finished and written to: {args.output_path}")
+        helper.valdidate_subprocess_execution(process,command)
+    
+    print(f"BLASTn process finished and written to: {blastn_path}")
