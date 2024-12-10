@@ -1,4 +1,6 @@
-/example_data/*.csv.gz
-/example_data/*.pbz2
+*.csv
+*.csv.gz
+*.tsv.gz
 *.blastdb.*
-*.blastn.out
+*.blastn.*
+bkSW.o*

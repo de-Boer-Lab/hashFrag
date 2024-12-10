@@ -7,9 +7,8 @@ import utils.helper_functions as helper
 def run(args):
 
     label = os.path.basename(args.fasta_path).replace(".fa.gz","")
-    out_dir = os.path.dirname(args.output_path)
-    blastdb_path = os.path.join(out_dir,f"{label}.blastdb")
-    blastn_path = os.path.join(out_dir,f"{label}.blastn.out")
+    blastdb_path = os.path.join(args.out_dir,f"{label}.blastdb")
+    blastn_path = os.path.join(args.out_dir,f"{label}.blastn.out")
 
     with gzip.open(args.fasta_path,"rb") as fasta:
         command = " ".join([
@@ -27,9 +26,6 @@ def run(args):
 
     print(f"BLAST DataBase construction finished and written to: {blastdb_path}")
     
-    if args.exec_blastdb_only:
-        sys.exit(0)
-
     with gzip.open(args.fasta_path,"rb") as fasta:
         command = " ".join([
             "blastn",

@@ -20,6 +20,13 @@ def load_fasta_as_dictionary(path,idset=None):
     handle.close()
     return fasta_dict
 
+def load_fasta_ids(path):
+    ids  = []
+    with gzip.open(path,"rt") as handle:
+        for record in SeqIO.parse(handle,"fasta"):
+            ids.append(record.description)
+    return ids
+
 def load_fasta_as_list(path):
     ids  = []
     seqs = []
@@ -119,15 +126,20 @@ def get_pairwise_comparisons(collisions_dict):
     return list(comparisons)
 
 # TODO: might need a more general way to specify forward/reverse strands
-def get_complementary_id(seq_id,idset):
+# def get_complementary_id(seq_id,idset):
+#     if seq_id.endswith("_Reversed"): # reverse strand
+#         seq_id_ = seq_id.replace("_Reversed","")
+#     else: # forward strand
+#         seq_id_ = seq_id+"_Reversed"
+#     if seq_id_ in idset:
+#         return seq_id_
+#     else:
+#         return
+def get_complementary_id(seq_id):
     if seq_id.endswith("_Reversed"): # reverse strand
-        seq_id_ = seq_id.replace("_Reversed","")
+        return seq_id.replace("_Reversed","")
     else: # forward strand
-        seq_id_ = seq_id+"_Reversed"
-    if seq_id_ in idset:
-        return seq_id_
-    else:
-        return
+        return seq_id+"_Reversed"
 
 def assert_membership(seq_id,group_set):
     if seq_id is not None:

@@ -22,23 +22,34 @@ def main():
     blast_parser.add_argument('--exec_blastdb_only',type=bool,default=False,help="")
     blast_parser.add_argument('-B','--blastn_args',type=str,default=None,help="")
     blast_parser.add_argument('-t','--threads',type=int,default=1,help="")
-    blast_parser.add_argument('-o','--output_path',type=str,required=True,help="")
+    blast_parser.add_argument('-o','--out_dir',type=str,required=True,help="")
     blast_parser.set_defaults(func=importlib.import_module("blastn").run)
-
-    # compute_recall (tuning)
-    # recall_parser = subparsers.add_parser("compute_recall")
-    # recall_parser.add_argument('-c','--collisions_path',type=str,required=True,help="")
-    # recall_parser.add_argument('-d','--score_matrix_path',type=str,required=True,help="")
-    # recall_parser.add_argument('-s','--step',type=int,default=1,help='')
-    # recall_parser.add_argument('-o','--output_path',type=str,required=True,help="")
-    # recall_parser.set_defaults(func=importlib.import_module("compute_recall").run)
 
     # filter_false_positives
     filtering_parser = subparsers.add_parser("filter_false_positives")
     filtering_parser.add_argument('-s','--score_dir',type=str,required=True,help="")
     filtering_parser.add_argument('-b','--blast_dir',type=str,required=True,help="")
     filtering_parser.add_argument('-t','--threshold',type=int,required=True,help='')
+    filtering_parser.add_argument('-o','--out_dir',type=str,required=True,help="")
     filtering_parser.set_defaults(func=importlib.import_module("filter_false_positives").run)
+
+    # identify_homologous_groups
+    homology_parser = subparsers.add_parser("identify_homologous_groups")
+    homology_parser.add_argument('-i','--hits_path',type=str,required=True,help="")
+    homology_parser.add_argument('-o','--output_path',type=str,required=True,help='')
+    homology_parser.set_defaults(func=importlib.import_module("identify_homologous_groups").run)
+
+    # create_orthogonal_splits
+    orthosplit_parser = subparsers.add_parser("create_orthogonal_splits")
+    orthosplit_parser.add_argument('-f','--fasta_path',type=str,required=True,help="")
+    orthosplit_parser.add_argument('-i','--homology_path',type=str,required=True,help="")
+    orthosplit_parser.add_argument('--p_train',type=float,default=0.8,help="")
+    orthosplit_parser.add_argument('--p_test',type=float,default=0.2,help="")
+    orthosplit_parser.add_argument('-n','--n_splits',type=int,default=1,help="")
+    orthosplit_parser.add_argument('-s','--seed',type=int,default=21,help="")
+    orthosplit_parser.add_argument('-o','--out_dir',type=str,required=True,help='')
+    orthosplit_parser.set_defaults(func=importlib.import_module("create_orthogonal_splits").run)
+
 
     args = parser.parse_args()
 
