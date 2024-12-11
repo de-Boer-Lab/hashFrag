@@ -3,29 +3,36 @@ import sys
 import gzip
 import subprocess
 import utils.helper_functions as helper
+from glob import glob
 
 def run(args):
 
     label = os.path.basename(args.fasta_path).replace(".fa.gz","")
-    blastdb_path = os.path.join(args.out_dir,f"{label}.blastdb")
+    if args.blastdb_label is None:
+        blastdb_path = os.path.join(args.out_dir,f"{label}.blastdb")
+    else:
+        blastdb_path = os.path.join(args.out_dir,f"{args.blastdb_label}.blastdb")
+    if glob(blastdb_path+".*"):
+        print(f"Existing BLAST DataBase found ({blastdb_path}). Skipping makeblastdb call.",flush=True)
+    else:
+        with gzip.open(args.fasta_path,"rb") as fasta:
+            command = " ".join([
+                "makeblastdb",
+                "-dbtype nucl",
+                "-input_type 'fasta'",
+                f"-title {label}",
+                f"-out {blastdb_path}",
+                " "
+            ])
+            if args.blastdb_args:
+                command += args.blastdb_args
+            process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
+            helper.valdidate_subprocess_execution(process,command)
+
+        print(f"BLAST DataBase construction finished and written to: {blastdb_path}",flush=True)
+    
     blastn_path = os.path.join(args.out_dir,f"{label}.blastn.out")
 
-    with gzip.open(args.fasta_path,"rb") as fasta:
-        command = " ".join([
-            "makeblastdb",
-            "-dbtype nucl",
-            "-input_type 'fasta'",
-            f"-title {label}",
-            f"-out {blastdb_path}",
-            " "
-        ])
-        if args.blastdb_args:
-            command += args.blastdb_args
-        process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
-        helper.valdidate_subprocess_execution(process,command)
-
-    print(f"BLAST DataBase construction finished and written to: {blastdb_path}")
-    
     with gzip.open(args.fasta_path,"rb") as fasta:
         command = " ".join([
             "blastn",
@@ -41,7 +48,7 @@ def run(args):
             f"-dust {args.dust}",
             f"-num_threads {args.threads}",
             "-outfmt '6 std score positive gaps'",
-            "-strand plus",
+            # "-strand plus",
             " "
         ])
         if args.blastn_args:
@@ -49,4 +56,4 @@ def run(args):
         process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
         helper.valdidate_subprocess_execution(process,command)
     
-    print(f"BLASTn process finished and written to: {blastn_path}")
+    print(f"BLASTn process finished and written to: {blastn_path}",flush=True)
