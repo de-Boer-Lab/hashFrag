@@ -14,7 +14,7 @@ CPU=16
 source $HOME/setenv/miniconda_arm.sh
 
 FASTA_PATH=$1
-OUTPATH=$( echo $FASTA_PATH | sed 's/.fa.gz/.pairwise_scores.csv.gz/g' )
+OUTPATH=$( echo $FASTA_PATH | sed 's/.fa.gz/.pairwise_scores.tsv.gz/g' )
 
 python compute_pairwise_SW_scores.py \
 -i $FASTA_PATH \

@@ -104,7 +104,7 @@ def compute_pairwise_SW_scores():
 
     with gzip.open(args.outpath,"wt") as handle:
         for (id_i,id_j,sw) in results:
-            handle.write(f"{id_i},{id_j},{sw}\n")
+            handle.write(f"{id_i}\t{id_j}\t{sw}\n")
 
     if args.verbose:
         print(f"SW scores written file: {args.outpath}",flush=True)

@@ -3,58 +3,65 @@ import pandas as pd
 from glob import glob
 # import utils.helper_functions as helper
 
+blast_columns = [
+    "qseqid","sseqid","pident","length","mismatch",
+    "gapopen","qstart","qend","sstart","send","evalue",
+    "bitscore","uncorrected_blast_score","positive","gaps"
+]
+
+def blast_file_validation(df,expected_columns):
+    if df.shape[1] != len(expected_columns):
+        raise Exception
+    if df.isnull().all(axis=0).any():
+        raise Exception
+
+score_columns = ["id_i","id_j","score"]
+
 def run(args):
 
-    score_columns = ["id_i","id_j","optimal_score"]
-    score_dfs = []
-    pattern = os.path.join(args.score_dir,"*.pairwise_scores.csv.gz")
-    for partitioned_score_path in sorted(glob(pattern)):
-        score_df = pd.read_csv(partitioned_score_path,names=score_columns)
-        score_df = score_df[
-            (score_df["optimal_score"] >= args.threshold) & \
-            (score_df["id_i"] != score_df["id_j"])
-        ]
-        score_dfs.append(score_df)
-    if not score_dfs:
-        raise Exception("Unable to find calculated pairwise scores.")
-    score_df = pd.concat(score_dfs)
-    del score_dfs
+    filtered_dfs = []
 
-    score_df['pair'] = score_df[['id_i', 'id_j']].apply(lambda x: tuple(sorted(x)), axis=1)
-    score_df = score_df.drop_duplicates(subset='pair')
+    if args.mode == "lightning": # Expects a BLAST output file
 
-    blast_columns = [
-        "qseqid","sseqid","pident","length","mismatch",
-        "gapopen","qstart","qend","sstart","send","evalue",
-        "bitscore","blast_score","positive","gaps"
-    ]
-    # blast_dfs = []
-    pattern = os.path.join(args.blast_dir,"*")
-    for partitioned_blast_path in sorted(glob(pattern)):
-        partition_label = os.path.basename(partitioned_blast_path)
-        if partition_label.endswith(".pairwise_scores.csv.gz"): continue
-        if partition_label.endswith(".augmented.tsv.gz"): continue
-
-        partitioned_blast_df = pd.read_csv(partitioned_blast_path,names=blast_columns,sep="\t")
-        partitioned_blast_df['pair'] = partitioned_blast_df[['qseqid','sseqid']].apply(lambda x: tuple(sorted(x)), axis=1)
-        partitioned_blast_df = partitioned_blast_df.merge(score_df[['pair','optimal_score']],on='pair',how='left')
-        partitioned_blast_df = partitioned_blast_df[~partitioned_blast_df["optimal_score"].isna()]
-
-        augmented_blast_path = partitioned_blast_path+".augmented.tsv.gz"
-        partitioned_blast_df.to_csv(augmented_blast_path,compression="gzip",sep="\t",index=False)
-        del partitioned_blast_df
-
-    pattern = os.path.join(args.blast_dir,"*.augmented.tsv.gz")
-    augmented_blast_dfs = []
-    for augmented_blast_path in sorted(glob(pattern)):
-        blast_df = pd.read_csv(augmented_blast_path,sep="\t")
-        augmented_blast_dfs.append(blast_df[["qseqid","sseqid","pair","blast_score","optimal_score"]].copy())
-        del blast_df
+        try:
+            for blast_df in pd.read_csv(args.input_path,names=blast_columns,sep="\t",chunksize=50_000):
+                blast_file_validation(blast_df,blast_columns)
+                blast_df["corrected_blast_score"] = (
+                    args.reward*blast_df["positive"] +
+                    args.penalty*blast_df["mismatch"] -
+                    args.gapopen*blast_df["gapopen"] -
+                    args.gapextend*(blast_df["gaps"]-blast_df["gapopen"])
+                )
+                blast_df = blast_df[
+                    (blast_df["corrected_blast_score"] >= args.threshold) & \
+                    (blast_df["qseqid"] != blast_df["sseqid"])
+                ]
+                blast_df = blast_df[["qseqid","sseqid","corrected_blast_score"]]
+                blast_df.columns = ["id_i","id_j","score"]
+                filtered_dfs.append(blast_df)
+        except:
+            raise Exception("Error: Unable to read BLAST file (lightning mode).")
     
-    augmented_blast_df = pd.concat(augmented_blast_dfs)
-    augmented_blast_df = augmented_blast_df.drop_duplicates(subset='pair')
-    augmented_blast_df = augmented_blast_df[["qseqid","sseqid","optimal_score"]]
-    filtered_blast_path = os.path.join(args.out_dir,"blastn_results.filtered_candidates.tsv.gz")
-    augmented_blast_df.to_csv(filtered_blast_path,compression="gzip",sep="\t",index=False)
+    elif args.mode == "pure": # Expects a custom tsv file
+    
+        try:
+            for score_df in pd.read_csv(args.input_path,names=score_columns,sep="\t",chunksize=50_000):
+                score_df = score_df[
+                    (score_df["score"] >= args.threshold) & \
+                    (score_df["id_i"] != score_df["id_j"])
+                ]
+                filtered_dfs.append(score_df)
+        except:
+            raise Exception("Error: Unable to read custom scores (pure mode).")
+    
+    else:
+        raise Exception("Error: invalid 'mode' specified. Permissible values include: {'lightning', 'pure'}.")
+
+    filtered_df = pd.concat(filtered_dfs)
+    filtered_df['pair'] = filtered_df[['id_i','id_j']].apply(lambda x: tuple(sorted(x)),axis=1)
+    filtered_df = filtered_df.drop_duplicates(subset='pair')
+    filtered_df = filtered_df[["id_i","id_j","score"]]
+    filtered_blast_path = os.path.join(args.out_dir,f"hashFrag_{args.mode}.similar_pairs.tsv.gz")
+    filtered_df.to_csv(filtered_blast_path,compression="gzip",sep="\t",index=False)
 
     print(f"Filtered results written to: {filtered_blast_path}")

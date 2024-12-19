@@ -4,3 +4,4 @@
 *.blastdb.*
 *.blastn.*
 bkSW.o*
+*.gz

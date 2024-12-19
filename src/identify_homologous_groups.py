@@ -60,7 +60,7 @@ def run(args):
 
     hits_dict = defaultdict(set)
     for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000):
-        for qseqid, sseqid in zip(chunk_df["qseqid"],chunk_df["sseqid"]):
+        for qseqid, sseqid in zip(chunk_df["id_i"],chunk_df["id_j"]):
             hits_dict[qseqid].add(sseqid)
             hits_dict[sseqid].add(qseqid)
 

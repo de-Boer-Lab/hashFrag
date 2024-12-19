@@ -27,11 +27,22 @@ def main():
 
     # filter_false_positives
     filtering_parser = subparsers.add_parser("filter_false_positives")
-    filtering_parser.add_argument('-s','--score_dir',type=str,required=True,help="")
-    filtering_parser.add_argument('-b','--blast_dir',type=str,required=True,help="")
+    filtering_parser.add_argument('-i','--input_path',type=str,required=True,help="")
+    filtering_parser.add_argument('-m','--mode',type=str,required=True,help="Permissible values include: {'lightning','pure'}.")
+    filtering_parser.add_argument('-g','--gapopen',type=int,default=2,help="Penalty for opening gap in the alignment.")
+    filtering_parser.add_argument('-x','--gapextend',type=int,default=1,help="Penalty for extending an existing gap in the alignment.")
+    filtering_parser.add_argument('-p','--penalty',type=int,default=-1,help="Nucleotide mismatch in penalty the alignment.")
+    filtering_parser.add_argument('-r','--reward',type=int,default=1,help="Nucleotide match reward in the alignment.")
     filtering_parser.add_argument('-t','--threshold',type=int,required=True,help='')
     filtering_parser.add_argument('-o','--out_dir',type=str,required=True,help="")
     filtering_parser.set_defaults(func=importlib.import_module("filter_false_positives").run)
+
+    # filter_existing_splits
+    filteredsplit_parser = subparsers.add_parser("filter_existing_splits")
+    filteredsplit_parser.add_argument('--train_fasta_path',type=str,required=True,help="")
+    filteredsplit_parser.add_argument('--test_fasta_path',type=str,required=True,help="")
+    filteredsplit_parser.add_argument('--hits_path',type=str,required=True,help="")
+    filteredsplit_parser.set_defaults(func=importlib.import_module("filter_existing_splits").run)
 
     # identify_homologous_groups
     homology_parser = subparsers.add_parser("identify_homologous_groups")
