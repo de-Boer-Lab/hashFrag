@@ -1,19 +1,13 @@
 import os
 import pandas as pd
 from glob import glob
-# import utils.helper_functions as helper
+import utils.helper_functions as helper
 
 blast_columns = [
     "qseqid","sseqid","pident","length","mismatch",
     "gapopen","qstart","qend","sstart","send","evalue",
     "bitscore","uncorrected_blast_score","positive","gaps"
 ]
-
-def blast_file_validation(df,expected_columns):
-    if df.shape[1] != len(expected_columns):
-        raise Exception
-    if df.isnull().all(axis=0).any():
-        raise Exception
 
 score_columns = ["id_i","id_j","score"]
 
@@ -25,7 +19,7 @@ def run(args):
 
         try:
             for blast_df in pd.read_csv(args.input_path,names=blast_columns,sep="\t",chunksize=50_000):
-                blast_file_validation(blast_df,blast_columns)
+                helper.blast_file_validation(blast_df,blast_columns)
                 blast_df["corrected_blast_score"] = (
                     args.reward*blast_df["positive"] +
                     args.penalty*blast_df["mismatch"] -

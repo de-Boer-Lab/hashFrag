@@ -161,3 +161,10 @@ def valdidate_subprocess_execution(process,command):
         raise subprocess.CalledProcessError()
     print(process.stdout.decode("utf-8"))
     return
+
+def blast_file_validation(df,expected_columns):
+    if df.shape[1] != len(expected_columns):
+        raise Exception
+    if df.isnull().all(axis=0).any():
+        raise Exception
+
