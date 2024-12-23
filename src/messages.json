@@ -1,0 +1,84 @@
+{
+    "hashFrag_description":"hashFrag is a tool developed to mitigate the impacts of homology-based data leakage in sequence-to-expression models. By identifying homology (based on pairwise alignment scores) in a sequence dataset, this tool can be used to filter homologous sequences spanning existing train-test splits (e.g., chromosomal splits), stratify a test split according to different levels of homology, or create homology-aware train-test splits.",
+    "blastn":{
+        "help":"A wrapper script calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity.",
+        "description":"A wrapper script calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity. If only 'fasta_path' is specified, all possible candidate pairs considered. However, if 'train_fasta_path' AND 'test_fasta_path' are specified, the BLAST database will be composed of the train sequences and each test sequence will be queried against the database.",
+        "args":{
+            "fasta_path":"Input FASTA file containing all sequences in the dataset. All sequences will comprise the BLAST database and each sequence will subsequently be queried against it.",
+            "train_fasta_path":"Input FASTA file for the training data split, which will comprise the BLAST database.",
+            "test_fasta_path":"Input FASTA file for the testing data split. Each sequence will be queried against the train split BLAST database.",
+            "word_size":"Length of exact matching subsequences of initial match.",
+            "gapopen":"Penalty for opening gap in the alignment.",
+            "gapextend":"Penalty for extending an existing gap in the alignment.",
+            "penalty":"Nucleotide mismatch in penalty the alignment.",
+            "reward":"Nucleotide match reward in the alignment.",
+            "max_target_seqs":"The maximum number of target sequences that can be returned per query sequence.",
+            "e_value":"The likelihood threshold required to report sequences as a match.",
+            "dust":"Filter low-complexity (e.g., repetitive) regions.",
+            "blastdb_args":"Pass additional arguments for makeblastdb call.",
+            "blastdb_label":"A label for the BLAST database.",
+            "blastn_args":"Pass additional arguments for blastn call.",
+            "threads":"The number of CPUs for database search.",
+            "output_dir":"Directory to write BLASTn results."
+        }
+    },
+    "filter_false_positives":{
+        "help":"Filter candidate pairs based on a specified alignment score threshold. False-positive removal step.",
+        "description":"",
+        "args":{
+            "input_path":"",
+            "mode":"The alignment scoring system upon which the filtering is based. Permissible values include: {'lightning','pure'}.",
+            "gapopen":"Penalty for opening gap in the alignment.",
+            "gapextend":"Penalty for extending an existing gap in the alignment.",
+            "penalty":"Nucleotide mismatch in penalty the alignment.",
+            "reward":"Nucleotide match reward in the alignment.",
+            "threshold":"",
+            "output_dir":""
+        }
+    },
+    "filter_existing_splits":{
+        "help":"Provided the filtered list of homology identified with the BLASTn algorithm, filter test sequences that exhibit homology with any train sequences.",
+        "description":"",
+        "args":{
+            "train_fasta_path":"",
+            "test_fasta_path":"",
+            "hits_path":""
+        }
+    },
+    "stratify_test_split":{
+        "help":"Given the calculated alignment scores for all candidates identified with the BLASTn algorithm, stratify the test split into subsplits based on their maximum alignment score to the sequences in the train split.",
+        "description":"",
+        "args":{
+            "test_fasta_path":"",
+            "input_path":"",
+            "mode":"The alignment scoring system upon which the filtering is based. Permissible values include: {'lightning','pure'}.",
+            "gapopen":"Penalty for opening gap in the alignment.",
+            "gapextend":"Penalty for extending an existing gap in the alignment.",
+            "penalty":"Nucleotide mismatch in penalty the alignment.",
+            "reward":"Nucleotide match reward in the alignment.",
+            "step":"",
+            "output_path":""
+        }
+    },
+    "identify_homologous_groups":{
+        "help":"Provided the filtered list of homology identified with the BLASTn algorithm, identify all distinct groups of homologous sequences.",
+        "description":"",
+        "args":{
+            "hits_path":"",
+            "output_path":""
+        }
+    },
+    "create_orthogonal_splits":{
+        "help":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits.",
+        "description":"",
+        "args":{
+            "fasta_path":"",
+            "homology_path":"",
+            "p_train":"",
+            "p_test":"",
+            "n_splits":"",
+            "seed":"",
+            "output_dir":""
+        }
+    }
+  }

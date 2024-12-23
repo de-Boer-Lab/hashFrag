@@ -2,18 +2,7 @@ import gzip
 import pandas as pd
 from Bio import SeqIO
 from collections import defaultdict
-
-def load_fasta_as_dictionary(fasta_path):
-    fasta_dict = {}
-    if fasta_path.endswith(".gz"):
-        with gzip.open(fasta_path,"rt") as handle:
-            for record in SeqIO.parse(handle,"fasta"):
-                fasta_dict[record.id] = str(record.seq)
-    else:
-        with open(fasta_path,"r") as handle:
-            for record in SeqIO.parse(handle,"fasta"):
-                fasta_dict[record.id] = str(record.seq)
-    return fasta_dict
+import utils.helper_functions as helper
 
 def run(args):
 
@@ -23,8 +12,8 @@ def run(args):
             hits_dict[qseqid].add(sseqid)
             hits_dict[sseqid].add(qseqid)
 
-    train_idset = set(load_fasta_as_dictionary(args.train_fasta_path))
-    test_fasta_dict = load_fasta_as_dictionary(args.test_fasta_path)
+    train_idset = set(helper.load_fasta_as_dictionary(args.train_fasta_path))
+    test_fasta_dict = helper.load_fasta_as_dictionary(args.test_fasta_path)
     test_ids = list(test_fasta_dict)
     n_test = len(test_ids)
     filtered_test_ids = []

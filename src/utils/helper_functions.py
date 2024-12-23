@@ -168,3 +168,10 @@ def blast_file_validation(df,expected_columns):
     if df.isnull().all(axis=0).any():
         raise Exception
 
+def is_valid_fasta_file(path):
+    return (path is not None) and os.path.exists(path)
+        
+def open_fasta_file(path):
+    if path.endswith(".gz"):
+        return gzip.open(path, "rb")
+    return open(path, "rb")
