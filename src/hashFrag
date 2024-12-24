@@ -30,7 +30,7 @@ def main():
     blast_parser.add_argument('-B','--blastn_args',type=str,default=None,help=messages_dict["blastn"]["args"]["blastn_args"])
     blast_parser.add_argument('-t','--threads',type=int,default=1,help=messages_dict["blastn"]["args"]["threads"])
     blast_parser.add_argument('-o','--output_dir',type=str,required=True,help=messages_dict["blastn"]["args"]["output_dir"])
-    blast_parser.set_defaults(func=lambda args: importlib.import_module("blastn").run(args))
+    blast_parser.set_defaults(func=lambda args: importlib.import_module("modules.blastn").run(args))
     # blast_parser.set_defaults(func=importlib.import_module("blastn").run)
 
     # filter_false_positives #TODO: rename/refactor to filter_candidates
@@ -43,7 +43,7 @@ def main():
     fp_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["filter_false_positives"]["args"]["reward"])
     fp_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_false_positives"]["args"]["threshold"])
     fp_parser.add_argument('-o','--out_dir',type=str,required=True,help=messages_dict["filter_false_positives"]["args"]["output_dir"])
-    fp_parser.set_defaults(func=lambda args: importlib.import_module("filter_false_positives").run(args))
+    fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_false_positives").run(args))
     # filtering_parser.set_defaults(func=importlib.import_module("filter_false_positives").run)
 
     # filter_existing_splits
@@ -51,7 +51,7 @@ def main():
     filter_parser.add_argument('--train_fasta_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["train_fasta_path"])
     filter_parser.add_argument('--test_fasta_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["test_fasta_path"])
     filter_parser.add_argument('--hits_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["hits_path"])
-    filter_parser.set_defaults(func=lambda args: importlib.import_module("filter_existing_splits").run(args))
+    filter_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_existing_splits").run(args))
     # filteredsplit_parser.set_defaults(func=importlib.import_module("filter_existing_splits").run)
 
     # stratify_test_split
@@ -65,14 +65,14 @@ def main():
     stratify_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["stratify_test_split"]["args"]["reward"])
     stratify_parser.add_argument('-s','--step',type=int,default=10,help=messages_dict["stratify_test_split"]["args"]["step"])
     stratify_parser.add_argument('-o','--output_path',type=str,required=True,help=messages_dict["stratify_test_split"]["args"]["output_path"])
-    stratify_parser.set_defaults(func=lambda args: importlib.import_module("stratify_test_split").run(args))
+    stratify_parser.set_defaults(func=lambda args: importlib.import_module("modules.stratify_test_split").run(args))
     # stratify_parser.set_defaults(func=importlib.import_module("stratify_test_split").run)
 
     # identify_homologous_groups
     homology_parser = subparsers.add_parser("identify_homologous_groups",description=messages_dict["identify_homologous_groups"]["description"],help=messages_dict["identify_homologous_groups"]["help"])
     homology_parser.add_argument('-i','--hits_path',type=str,required=True,help=messages_dict["identify_homologous_groups"]["args"]["hits_path"])
     homology_parser.add_argument('-o','--output_path',type=str,required=True,help=messages_dict["identify_homologous_groups"]["args"]["output_path"])
-    homology_parser.set_defaults(func=lambda args: importlib.import_module("identify_homologous_groups").run(args))
+    homology_parser.set_defaults(func=lambda args: importlib.import_module("modules.identify_homologous_groups").run(args))
     # homology_parser.set_defaults(func=importlib.import_module("identify_homologous_groups").run)
 
     # create_orthogonal_splits
@@ -84,7 +84,7 @@ def main():
     orthosplit_parser.add_argument('-n','--n_splits',type=int,default=1,help=messages_dict["create_orthogonal_splits"]["args"]["n_splits"])
     orthosplit_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_splits"]["args"]["seed"])
     orthosplit_parser.add_argument('-o','--output_dir',type=str,required=True,help=messages_dict["create_orthogonal_splits"]["args"]["output_dir"])
-    orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("create_orthogonal_splits").run(args))
+    orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits").run(args))
     # orthosplit_parser.set_defaults(func=importlib.import_module("create_orthogonal_splits").run)
 
     args = parser.parse_args()
