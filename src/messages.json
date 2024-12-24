@@ -6,7 +6,7 @@
         "args":{
             "fasta_path":"Input FASTA file containing all sequences in the dataset. All sequences will comprise the BLAST database and each sequence will subsequently be queried against it.",
             "train_fasta_path":"Input FASTA file for the training data split, which will comprise the BLAST database.",
-            "test_fasta_path":"Input FASTA file for the testing data split. Each sequence will be queried against the train split BLAST database.",
+            "test_fasta_path":"Each sequence will be queried against the train split BLAST database.",
             "word_size":"Length of exact matching subsequences of initial match.",
             "gapopen":"Penalty for opening gap in the alignment.",
             "gapextend":"Penalty for extending an existing gap in the alignment.",
@@ -24,61 +24,61 @@
     },
     "filter_false_positives":{
         "help":"Filter candidate pairs based on a specified alignment score threshold. False-positive removal step.",
-        "description":"",
+        "description":"Filter candidate pairs based on a specified alignment score threshold. False-positive removal step. If called with 'lightning' mode, a corrected BLAST alignment score will be calculated for each candidate pair -- filtering will be with respect to this corrected score.",
         "args":{
-            "input_path":"",
+            "input_path":"Either the BLAST results file (tabular format) or manually computed alignment scores in tab-delimited format.",
             "mode":"The alignment scoring system upon which the filtering is based. Permissible values include: {'lightning','pure'}.",
             "gapopen":"Penalty for opening gap in the alignment.",
             "gapextend":"Penalty for extending an existing gap in the alignment.",
             "penalty":"Nucleotide mismatch in penalty the alignment.",
             "reward":"Nucleotide match reward in the alignment.",
-            "threshold":"",
-            "output_dir":""
+            "threshold":"Alignment score threshold to discern a pair of sequences as homologous or a false-positive candidate.",
+            "output_dir":"Directory to output the filtered list of homologous sequence pairs (tab-delimited format)."
         }
     },
     "filter_existing_splits":{
         "help":"Provided the filtered list of homology identified with the BLASTn algorithm, filter test sequences that exhibit homology with any train sequences.",
-        "description":"",
+        "description":"Provided the filtered list of homology identified with the BLASTn algorithm, filter test sequences that exhibit homology with any train sequences.",
         "args":{
-            "train_fasta_path":"",
-            "test_fasta_path":"",
-            "hits_path":""
+            "train_fasta_path":"Input FASTA file for the training sequences.",
+            "test_fasta_path":"Input FASTA file for the testing sequences",
+            "hits_path":"Filtered list of sequence pairs exhibiting high alignment score (i.e., homology)."
         }
     },
     "stratify_test_split":{
         "help":"Given the calculated alignment scores for all candidates identified with the BLASTn algorithm, stratify the test split into subsplits based on their maximum alignment score to the sequences in the train split.",
-        "description":"",
+        "description":"Given the calculated alignment scores for all candidates identified with the BLASTn algorithm, stratify the test split into subsplits based on their maximum alignment score to the sequences in the train split. This feature can be useful for investigating model performance as a function of test splits of varying degrees of orthogonality to the train split. If called with 'lightning' mode, a corrected BLAST alignment score will be calculated for each candidate pair and used for stratification.",
         "args":{
-            "test_fasta_path":"",
-            "input_path":"",
+            "test_fasta_path":"Input FASTA file for the testing sequences",
+            "input_path":"Either the BLAST results file (tabular format) or manually computed alignment scores in tab-delimited format.",
             "mode":"The alignment scoring system upon which the filtering is based. Permissible values include: {'lightning','pure'}.",
             "gapopen":"Penalty for opening gap in the alignment.",
             "gapextend":"Penalty for extending an existing gap in the alignment.",
             "penalty":"Nucleotide mismatch in penalty the alignment.",
             "reward":"Nucleotide match reward in the alignment.",
-            "step":"",
-            "output_path":""
+            "step":"The step size refers to how large each alignment score range is.",
+            "output_path":"A tab-delimited file containing the stratified level of each sequence in the test split."
         }
     },
     "identify_homologous_groups":{
         "help":"Provided the filtered list of homology identified with the BLASTn algorithm, identify all distinct groups of homologous sequences.",
-        "description":"",
+        "description":"Provided the filtered list of homology identified with the BLASTn algorithm, identify all distinct groups of homologous sequences. This will only include homologous group labels for sequences exhibiting homology with at least one other sequence.",
         "args":{
-            "hits_path":"",
-            "output_path":""
+            "hits_path":"Filtered list of sequence pairs exhibiting high alignment score (i.e., homology).",
+            "output_path":"A tab-delimited file containing the homologous group labels that the relevant sequences in the test split belong to."
         }
     },
     "create_orthogonal_splits":{
         "help":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits.",
-        "description":"",
+        "description":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits. This is accomplished via a graph-based method where nodes are sequences and edges denote a pair of sequences exhibiting homology. From there, the task involves identifying all homologous groups is equivalent to finding disconnected subgraphs in the population.",
         "args":{
-            "fasta_path":"",
-            "homology_path":"",
-            "p_train":"",
-            "p_test":"",
-            "n_splits":"",
-            "seed":"",
-            "output_dir":""
+            "fasta_path":"Input FASTA file containing all sequences in the dataset.",
+            "homology_path":"The tab-delimited file containing the homologous group labels that the relevant sequences in the test split belong to (output file of 'identify_homologous_groups').",
+            "p_train":"The proportion of sequences to send to the train data split.",
+            "p_test":"The proportion of sequences to send to the test data split.",
+            "n_splits":"Number of split replicates to create.",
+            "seed":"Random seed to use for the creation of homology-aware data splits.",
+            "output_dir":"The directory to write the created train-test splits."
         }
     }
   }
