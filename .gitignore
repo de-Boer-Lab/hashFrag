@@ -5,3 +5,5 @@
 *.blastn.*
 bkSW.o*
 *.gz
+.ipynb_checkpoints
+__pycache__
