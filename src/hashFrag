@@ -33,26 +33,26 @@ def main():
     blast_parser.set_defaults(func=lambda args: importlib.import_module("modules.blastn").run(args))
     # blast_parser.set_defaults(func=importlib.import_module("blastn").run)
 
-    # filter_false_positives #TODO: rename/refactor to filter_candidates
-    fp_parser = subparsers.add_parser("filter_false_positives",description=messages_dict["filter_false_positives"]["description"],help=messages_dict["filter_false_positives"]["help"])
-    fp_parser.add_argument('-i','--input_path',type=str,required=True,help=messages_dict["filter_false_positives"]["args"]["input_path"])
-    fp_parser.add_argument('-m','--mode',type=str,required=True,help=messages_dict["filter_false_positives"]["args"]["mode"])
-    fp_parser.add_argument('-g','--gapopen',type=int,default=2,help=messages_dict["filter_false_positives"]["args"]["gapopen"])
-    fp_parser.add_argument('-x','--gapextend',type=int,default=1,help=messages_dict["filter_false_positives"]["args"]["gapextend"])
-    fp_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["filter_false_positives"]["args"]["penalty"])
-    fp_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["filter_false_positives"]["args"]["reward"])
-    fp_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_false_positives"]["args"]["threshold"])
-    fp_parser.add_argument('-o','--out_dir',type=str,required=True,help=messages_dict["filter_false_positives"]["args"]["output_dir"])
-    fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_false_positives").run(args))
-    # filtering_parser.set_defaults(func=importlib.import_module("filter_false_positives").run)
+    # filter_candidates #TODO: rename/refactor to filter_candidates
+    fp_parser = subparsers.add_parser("filter_candidates",description=messages_dict["filter_candidates"]["description"],help=messages_dict["filter_candidates"]["help"])
+    fp_parser.add_argument('-i','--input_path',type=str,required=True,help=messages_dict["filter_candidates"]["args"]["input_path"])
+    fp_parser.add_argument('-m','--mode',type=str,required=True,help=messages_dict["filter_candidates"]["args"]["mode"])
+    fp_parser.add_argument('-g','--gapopen',type=int,default=2,help=messages_dict["filter_candidates"]["args"]["gapopen"])
+    fp_parser.add_argument('-x','--gapextend',type=int,default=1,help=messages_dict["filter_candidates"]["args"]["gapextend"])
+    fp_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["filter_candidates"]["args"]["penalty"])
+    fp_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["filter_candidates"]["args"]["reward"])
+    fp_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates"]["args"]["threshold"])
+    fp_parser.add_argument('-o','--out_dir',type=str,required=True,help=messages_dict["filter_candidates"]["args"]["output_dir"])
+    fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_candidates").run(args))
+    # filtering_parser.set_defaults(func=importlib.import_module("filter_candidates").run)
 
-    # filter_existing_splits # TODO: change to filter_test_split
-    filter_parser = subparsers.add_parser("filter_existing_splits",description=messages_dict["filter_existing_splits"]["description"],help=messages_dict["filter_existing_splits"]["help"])
-    filter_parser.add_argument('--train_fasta_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["train_fasta_path"])
-    filter_parser.add_argument('--test_fasta_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["test_fasta_path"])
-    filter_parser.add_argument('--hits_path',type=str,required=True,help=messages_dict["filter_existing_splits"]["args"]["hits_path"])
-    filter_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_existing_splits").run(args))
-    # filteredsplit_parser.set_defaults(func=importlib.import_module("filter_existing_splits").run)
+    # filter_test_split # TODO: change to filter_test_split
+    filter_parser = subparsers.add_parser("filter_test_split",description=messages_dict["filter_test_split"]["description"],help=messages_dict["filter_test_split"]["help"])
+    filter_parser.add_argument('--train_fasta_path',type=str,required=True,help=messages_dict["filter_test_split"]["args"]["train_fasta_path"])
+    filter_parser.add_argument('--test_fasta_path',type=str,required=True,help=messages_dict["filter_test_split"]["args"]["test_fasta_path"])
+    filter_parser.add_argument('--hits_path',type=str,required=True,help=messages_dict["filter_test_split"]["args"]["hits_path"])
+    filter_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_test_split").run(args))
+    # filteredsplit_parser.set_defaults(func=importlib.import_module("filter_test_split").run)
 
     # stratify_test_split
     stratify_parser = subparsers.add_parser("stratify_test_split",description=messages_dict["stratify_test_split"]["description"],help=messages_dict["stratify_test_split"]["help"])
@@ -88,7 +88,7 @@ def main():
     # orthosplit_parser.set_defaults(func=importlib.import_module("create_orthogonal_splits").run)
 
     # filter_existing_splits_pipeline
-    filter_pipeline_parser = subparsers.add_parser("filter_existing_splits_pipeline",description=messages_dict["filter_existing_splits_pipeline"]["description"],help=messages_dict["create_orthogonal_splits"]["help"])
+    filter_pipeline_parser = subparsers.add_parser("filter_existing_splits_pipeline",description=messages_dict["filter_existing_splits_pipeline"]["description"],help=messages_dict["filter_existing_splits_pipeline"]["help"])
 
     filter_pipeline_parser.add_argument('--train_fasta_path',type=str,default=None,help=messages_dict["blastn"]["args"]["train_fasta_path"])
     filter_pipeline_parser.add_argument('--test_fasta_path',type=str,default=None,help=messages_dict["blastn"]["args"]["test_fasta_path"])
@@ -104,13 +104,13 @@ def main():
     filter_pipeline_parser.add_argument('--blastdb_label',type=str,default=None,help=messages_dict["blastn"]["args"]["blastdb_label"])
     filter_pipeline_parser.add_argument('-B','--blastn_args',type=str,default=None,help=messages_dict["blastn"]["args"]["blastn_args"])
     filter_pipeline_parser.add_argument('-T','--threads',type=int,default=1,help=messages_dict["blastn"]["args"]["threads"])
+    filter_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates"]["args"]["threshold"])
     filter_pipeline_parser.add_argument('-o','--output_dir',type=str,required=True,help=messages_dict["blastn"]["args"]["output_dir"])
-    filter_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_false_positives"]["args"]["threshold"])
 
     filter_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_existing_splits_pipeline").run(args))
 
     # stratify_test_split_pipeline
-    stratify_pipeline_parser = subparsers.add_parser("stratify_test_split_pipeline",description=messages_dict["stratify_test_split_pipeline"]["description"],help=messages_dict["create_orthogonal_splits"]["help"])
+    stratify_pipeline_parser = subparsers.add_parser("stratify_test_split_pipeline",description=messages_dict["stratify_test_split_pipeline"]["description"],help=messages_dict["stratify_test_split_pipeline"]["help"])
 
     stratify_pipeline_parser.add_argument('--train_fasta_path',type=str,default=None,help=messages_dict["blastn"]["args"]["train_fasta_path"])
     stratify_pipeline_parser.add_argument('--test_fasta_path',type=str,default=None,help=messages_dict["blastn"]["args"]["test_fasta_path"])
@@ -132,7 +132,7 @@ def main():
     stratify_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.stratify_test_split_pipeline").run(args))
 
     # create_orthogonal_splits_pipeline
-    orthosplit_pipeline_parser = subparsers.add_parser("create_orthogonal_splits_pipeline",description=messages_dict["create_orthogonal_splits_pipeline"]["description"],help=messages_dict["create_orthogonal_splits"]["help"])
+    orthosplit_pipeline_parser = subparsers.add_parser("create_orthogonal_splits_pipeline",description=messages_dict["create_orthogonal_splits_pipeline"]["description"],help=messages_dict["create_orthogonal_splits_pipeline"]["help"])
 
     orthosplit_pipeline_parser.add_argument('-f','--fasta_path',type=str,default=None,help=messages_dict["blastn"]["args"]["fasta_path"])
     orthosplit_pipeline_parser.add_argument('-w','--word_size',type=int,default=11,help=messages_dict["blastn"]["args"]["word_size"])
@@ -147,7 +147,7 @@ def main():
     orthosplit_pipeline_parser.add_argument('--blastdb_label',type=str,default=None,help=messages_dict["blastn"]["args"]["blastdb_label"])
     orthosplit_pipeline_parser.add_argument('-B','--blastn_args',type=str,default=None,help=messages_dict["blastn"]["args"]["blastn_args"])
     orthosplit_pipeline_parser.add_argument('-T','--threads',type=int,default=1,help=messages_dict["blastn"]["args"]["threads"])
-    orthosplit_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_false_positives"]["args"]["threshold"])
+    orthosplit_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates"]["args"]["threshold"])
     orthosplit_pipeline_parser.add_argument('--p_train',type=float,default=0.8,help=messages_dict["create_orthogonal_splits"]["args"]["p_train"])
     orthosplit_pipeline_parser.add_argument('--p_test',type=float,default=0.2,help=messages_dict["create_orthogonal_splits"]["args"]["p_test"])
     orthosplit_pipeline_parser.add_argument('-n','--n_splits',type=int,default=1,help=messages_dict["create_orthogonal_splits"]["args"]["n_splits"])

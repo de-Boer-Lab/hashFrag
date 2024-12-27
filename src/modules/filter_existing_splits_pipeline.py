@@ -2,8 +2,8 @@ import os
 import argparse
 
 from modules.blastn import run as hashFrag_blastn
-from modules.filter_false_positives import run as hashFrag_filter_candidates
-from modules.filter_existing_splits import run as hashFrag_filter_splits
+from modules.filter_candidates import run as hashFrag_filter_candidates
+from modules.filter_test_split import run as hashFrag_filter_test_split
     
 
 def run(args):
@@ -32,7 +32,7 @@ def run(args):
     hashFrag_blastn(blastn_args)
     blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    print("Running filter_false_positives...")
+    print("Running filter_candidates...")
     filter_candidates_args = argparse.Namespace(
         input_path=blast_path,
         mode="lightning",
@@ -46,12 +46,12 @@ def run(args):
     hashFrag_filter_candidates(filter_candidates_args)
     hits_path = os.path.join(args.output_dir,f"hashFrag_lightning.similar_pairs.tsv.gz")
 
-    print("Running filter_existing_splits...")
-    filter_splits_args = argparse.Namespace(
+    print("Running filter_test_split...")
+    filter_test_split_args = argparse.Namespace(
         train_fasta_path=args.train_fasta_path,
         test_fasta_path=args.test_fasta_path,
         hits_path=hits_path
     )
-    hashFrag_filter_splits(filter_splits_args)
+    hashFrag_filter_test_split(filter_test_split_args)
 
     print("Master command completed successfully.")

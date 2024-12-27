@@ -2,7 +2,7 @@ import os
 import argparse
 
 from modules.blastn import run as hashFrag_blastn
-from modules.filter_false_positives import run as hashFrag_filter_candidates
+from modules.filter_candidates import run as hashFrag_filter_candidates
 from modules.identify_homologous_groups import run as hashFrag_identify_groups
 from modules.create_orthogonal_splits import run as hashFrag_create_orthosplits
 
@@ -32,7 +32,7 @@ def run(args):
     hashFrag_blastn(blastn_args)
     blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    print("Running filter_false_positives...")
+    print("Running filter_candidates...")
     filter_candidates_args = argparse.Namespace(
         input_path=blast_path,
         mode="lightning",
