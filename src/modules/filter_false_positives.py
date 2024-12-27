@@ -55,7 +55,7 @@ def run(args):
     filtered_df['pair'] = filtered_df[['id_i','id_j']].apply(lambda x: tuple(sorted(x)),axis=1)
     filtered_df = filtered_df.drop_duplicates(subset='pair')
     filtered_df = filtered_df[["id_i","id_j","score"]]
-    filtered_blast_path = os.path.join(args.out_dir,f"hashFrag_{args.mode}.similar_pairs.tsv.gz")
+    filtered_blast_path = os.path.join(args.output_dir,f"hashFrag_{args.mode}.similar_pairs.tsv.gz")
     filtered_df.to_csv(filtered_blast_path,compression="gzip",sep="\t",index=False)
 
     print(f"Filtered results written to: {filtered_blast_path}")

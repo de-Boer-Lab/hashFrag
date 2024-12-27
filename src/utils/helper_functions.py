@@ -1,3 +1,4 @@
+import os
 import bz2
 import gzip
 import pickle
