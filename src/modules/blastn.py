@@ -36,7 +36,7 @@ def run(args):
             blastdb_path = join(args.output_dir,f"{label}.blastdb")
             blastn_path  = join(args.output_dir,f"{label}.blastn.out")
         else:
-            label        = args.blastdf_label
+            label        = args.blastdb_label
             blastdb_path = join(args.output_dir,f"{args.blastdb_label}.blastdb")
             blastn_path  = join(args.output_dir,f"{args.blastdb_label}.blastn.out")
 

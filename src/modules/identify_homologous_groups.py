@@ -82,6 +82,6 @@ def run(args):
     with open(args.output_path,"w") as handle:
         for group_id,homologous_group in enumerate(homologous_groups):
             for sample_id in homologous_group:
-                handle.write(f"{sample_id},{group_id}\n")
+                handle.write(f"{sample_id}\t{group_id}\n")
 
     print(f"Homologous groups written to file: {args.output_path}",flush=True)

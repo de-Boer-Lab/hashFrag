@@ -16,7 +16,7 @@ def run(args):
 
     with open(args.homology_path,"r") as handle:
         for line in handle:
-            sample_id,group_id = line.strip().split(",")
+            sample_id,group_id = line.strip().split("\t")
             hit_idset.add(sample_id)
             homologous_groups[group_id].add(sample_id)
 
@@ -56,7 +56,7 @@ def run(args):
         test_split  = sorted(ids_)
 
         filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.csv.gz"
-        outpath  = os.path.join(args.out_dir,filename)
+        outpath  = os.path.join(args.output_dir,filename)
         print(" ",outpath,flush=True)
         with gzip.open(outpath,"wt") as handle:
             handle.write("id,split\n")
