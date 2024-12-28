@@ -1,16 +1,18 @@
 import os
+import logging
 import argparse
 
 from modules.blastn import run as hashFrag_blastn
 from modules.filter_candidates import run as hashFrag_filter_candidates
 from modules.filter_test_split import run as hashFrag_filter_test_split
-    
 
 def run(args):
 
-    label = "hashFrag_lightning"
+    logger = logging.getLogger("pipeline")
+    logger.info("Initializing `filter_existing_splits_pipeline`.\n")
 
-    print("Running blastn...")
+    label = "hashFrag"
+
     blastn_args = argparse.Namespace(
         fasta_path=None,
         train_fasta_path=args.train_fasta_path,
@@ -32,7 +34,6 @@ def run(args):
     hashFrag_blastn(blastn_args)
     blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    print("Running filter_candidates...")
     filter_candidates_args = argparse.Namespace(
         input_path=blast_path,
         mode="lightning",
@@ -46,7 +47,6 @@ def run(args):
     hashFrag_filter_candidates(filter_candidates_args)
     hits_path = os.path.join(args.output_dir,f"hashFrag_lightning.similar_pairs.tsv.gz")
 
-    print("Running filter_test_split...")
     filter_test_split_args = argparse.Namespace(
         train_fasta_path=args.train_fasta_path,
         test_fasta_path=args.test_fasta_path,
@@ -54,4 +54,4 @@ def run(args):
     )
     hashFrag_filter_test_split(filter_test_split_args)
 
-    print("Master command completed successfully.")
+    logger.info("Completed execution of the pipeline to filter existing data splits!")

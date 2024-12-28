@@ -3,6 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 import utils.helper_functions as helper
+import logging
 
 blast_columns = [
     "qseqid","sseqid","pident","length","mismatch",
@@ -20,12 +21,15 @@ def round_to_upper_bound(number,step):
 
 def run(args):
 
+    logger = logging.getLogger(__name__.replace("modules.",""))
+    logger.info("Calling module...")
+
     ids = helper.load_fasta_ids(args.test_fasta_path)
     idset = set(ids)
     scores_dict = { sample_id:[] for sample_id in ids }
 
     if args.mode == "lightning": # Expects a BLAST output file
-
+        logger.info("Stratifying based on corrected BLAST alignment scores (lightning mode).")
         try:
             for blast_df in pd.read_csv(args.input_path,names=blast_columns,sep="\t",chunksize=50_000):
                 helper.blast_file_validation(blast_df,blast_columns)
@@ -43,7 +47,7 @@ def run(args):
             raise Exception("Error: Unable to read BLAST file (lightning mode).")
     
     elif args.mode == "pure": # Expects a custom tsv file
-    
+        logger.info("Stratifying based on precomputed alignment scores (pure mode).")
         try:
             for score_df in pd.read_csv(args.input_path,names=score_columns,sep="\t",chunksize=50_000):
                 for sample_id,score in zip(score_df["id_i"],score_df["score"]):
@@ -70,4 +74,5 @@ def run(args):
 
     scores_df.to_csv(args.output_path,compression="gzip",sep="\t",index=False)
 
-    print(f"Stratified test split written to file: {args.output_path}",flush=True)
+    logger.info(f"Stratification results written to: {args.output_path}")
+    logger.info(f"Module execution completed.\n")

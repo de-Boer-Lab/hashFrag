@@ -5,6 +5,8 @@ import json
 import argparse
 import importlib
 
+import utils.helper_functions as helper
+
 with open(os.path.join(os.path.dirname(__file__),"messages.json"), "r") as f:
     messages_dict = json.load(f)
 
@@ -157,6 +159,8 @@ def main():
     orthosplit_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits_pipeline").run(args))
     
     args = parser.parse_args()
+
+    helper.instantiate_logger()
 
     if hasattr(args, 'func'):
         args.func(args)

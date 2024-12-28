@@ -2,8 +2,48 @@ import os
 import bz2
 import gzip
 import pickle
+import logging
+import logging.config
 import subprocess
 from Bio import SeqIO,pairwise2
+
+def instantiate_logger():
+    log_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S"
+            },
+            "detailed": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(module)s - %(funcName)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S"
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG", 
+                "formatter": "default",
+                "stream": "ext://sys.stdout" 
+            },
+            "error": {
+                "class": "logging.StreamHandler",
+                "level": "ERROR",
+                "formatter": "detailed",
+                "stream": "ext://sys.stderr"
+            }
+        },
+        "loggers": {
+            "": {
+                "level": "DEBUG",
+                "handlers": ["console", "error"]
+            }
+        }
+    }
+
+    logging.config.dictConfig(log_config)
 
 def load_fasta_as_dictionary(path,idset=None):
     fasta_dict = {}
@@ -155,12 +195,24 @@ def write_splits_to_file(train_split,test_split,path):
             handle.write(f"{seq_id},test\n")
     return
 
-def valdidate_subprocess_execution(process,command):
+def valdidate_subprocess_execution(process,command,logger):
     if process.returncode != 0:
-        print(f"Error executing the following command: {command}")
-        print(process.stderr.decode("utf-8"))
+        logger.error(f"Error executing the following command: {command}")
+        if process.stdout:
+            logger.info(f"BLASTn output: {process.stdout.decode('utf-8')}")
+        if process.stderr:
+            logger.error(f"BLASTn error: {process.stderr.decode('utf-8')}")
+        # print(f"Error executing the following command: {command}")
+        # print(process.stderr.decode("utf-8"))
         raise subprocess.CalledProcessError()
-    print(process.stdout.decode("utf-8"))
+    # print(process.stdout.decode("utf-8"))
+
+    if process.stdout:
+        logger.info(f"BLASTn output: {process.stdout.decode('utf-8')}")
+    
+    if process.stderr:
+        logger.error(f"BLASTn error: {process.stderr.decode('utf-8')}")
+
     return
 
 def blast_file_validation(df,expected_columns):

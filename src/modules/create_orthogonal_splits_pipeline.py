@@ -1,4 +1,5 @@
 import os
+import logging
 import argparse
 
 from modules.blastn import run as hashFrag_blastn
@@ -8,9 +9,11 @@ from modules.create_orthogonal_splits import run as hashFrag_create_orthosplits
 
 def run(args):
 
-    label = "hashFrag_lightning"
+    logger = logging.getLogger("pipeline")
+    logger.info("Initializing `create_orthogonal_splits_pipeline`.\n")
 
-    print("Running blastn...")
+    label = "hashFrag"
+
     blastn_args = argparse.Namespace(
         fasta_path=args.fasta_path,
         train_fasta_path=None,
@@ -32,7 +35,6 @@ def run(args):
     hashFrag_blastn(blastn_args)
     blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    print("Running filter_candidates...")
     filter_candidates_args = argparse.Namespace(
         input_path=blast_path,
         mode="lightning",
@@ -46,15 +48,12 @@ def run(args):
     hashFrag_filter_candidates(filter_candidates_args)
     hits_path = os.path.join(args.output_dir,f"hashFrag_lightning.similar_pairs.tsv.gz")
     homology_path = os.path.join(args.output_dir,f"hashFrag_lightning.homologous_groups.tsv")
-
-    print("Running identify_homologous_groups...")
     identify_groups_args = argparse.Namespace(
         hits_path=hits_path,
         output_path=homology_path
     )
     hashFrag_identify_groups(identify_groups_args)
 
-    print("Running create_orthogonal_splits...")
     create_orthosplits_args = argparse.Namespace(
         fasta_path=args.fasta_path,
         homology_path=homology_path,
@@ -66,4 +65,4 @@ def run(args):
     )
     hashFrag_create_orthosplits(create_orthosplits_args)
 
-    print("Master command completed successfully.")
+    logger.info("Completed execution of the pipeline to create homology-aware data splits!")

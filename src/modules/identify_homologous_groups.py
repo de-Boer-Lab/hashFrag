@@ -4,6 +4,7 @@ import pandas as pd
 from scipy.sparse import coo_matrix
 from collections import defaultdict
 import utils.helper_functions as helper
+import logging
 
 def get_symmetric_adjacency_dict(adjacency_dict):
     symmetric_adjacency_dict = defaultdict(set)
@@ -58,6 +59,9 @@ def determine_homologous_communities(adjacency_dict):
 
 def run(args):
 
+    logger = logging.getLogger(__name__.replace("modules.",""))
+    logger.info("Calling module...")
+    
     hits_dict = defaultdict(set)
     for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000):
         for qseqid, sseqid in zip(chunk_df["id_i"],chunk_df["id_j"]):
@@ -71,17 +75,18 @@ def run(args):
         if candidates != {query_id,helper.get_complementary_id(query_id)}
     }
     if len(symmetric_hits_dict) == 0:
-        print("No homology detected! Exiting.",flush=True)
+        logger.info("No homology detected!\n\tExiting.")
         sys.exit(0)
     else:
-        print(f"{len(symmetric_hits_dict)} sequences exhibiting homology.",flush=True)
+        logger.info(f"{len(symmetric_hits_dict)} sequences exhibiting homology.")
 
     homologous_groups = determine_homologous_communities(symmetric_hits_dict)
-    print(f"{len(homologous_groups)} homologous groups identified.",flush=True)
+    logger.info(f"{len(homologous_groups)} distinct groups.")
 
     with open(args.output_path,"w") as handle:
         for group_id,homologous_group in enumerate(homologous_groups):
             for sample_id in homologous_group:
                 handle.write(f"{sample_id}\t{group_id}\n")
 
-    print(f"Homologous groups written to file: {args.output_path}",flush=True)
+    logger.info(f"Homologous groups written to: {args.output_path}")
+    logger.info(f"Module execution completed.\n")

@@ -1,4 +1,5 @@
 import os
+import logging
 import argparse
 
 from modules.blastn import run as hashFrag_blastn
@@ -7,9 +8,11 @@ from modules.stratify_test_split import run as hashFrag_stratify_test_split
 
 def run(args):
 
-    label = "hashFrag_lightning"
+    logger = logging.getLogger("pipeline")
+    logger.info("Initializing `stratify_test_split_pipeline`.\n")
 
-    print("Running blastn...")
+    label = "hashFrag"
+
     blastn_args = argparse.Namespace(
         fasta_path=None,
         train_fasta_path=args.train_fasta_path,
@@ -31,7 +34,6 @@ def run(args):
     hashFrag_blastn(blastn_args)
     blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    print("Running stratify_test_split...")
     stratified_path = os.path.join(args.output_dir,f"{label}.stratified_test_split.tsv.gz")
     stratify_test_split_args = argparse.Namespace(
         test_fasta_path=args.test_fasta_path,
@@ -46,4 +48,4 @@ def run(args):
     )
     hashFrag_stratify_test_split(stratify_test_split_args)
 
-    print("Master command completed successfully.")
+    logger.info("Completed execution of the pipeline to stratify the test split by alignment score!")

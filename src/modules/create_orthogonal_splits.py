@@ -1,10 +1,14 @@
 import os
 import gzip
 import random
+import logging
 from collections import defaultdict
 import utils.helper_functions as helper
 
 def run(args):
+
+    logger = logging.getLogger(__name__.replace("modules.",""))
+    logger.info("Calling module...")
 
     if args.p_train+args.p_test != 1:
         raise Exception("Intestid probabilities specified!")
@@ -31,7 +35,7 @@ def run(args):
     if n_train+n_test != n:
         raise Exception(f"Combined train ({n_train}) and test ({n_test}) size doesn't add up to expected total ({n}).")
 
-    print("Writing splits...")
+    logger.info(f"Creating {args.n_splits} orthogonal splits in directory: {args.output_dir}")
     for i in range(args.n_splits):
         split = f"split_{i+1:0>3}"
 
@@ -57,10 +61,11 @@ def run(args):
 
         filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.csv.gz"
         outpath  = os.path.join(args.output_dir,filename)
-        print(" ",outpath,flush=True)
         with gzip.open(outpath,"wt") as handle:
             handle.write("id,split\n")
             for sample_id in train_split:
                 handle.write(f"{sample_id},train\n")
             for sample_id in test_split:
                 handle.write(f"{sample_id},test\n")
+
+    logger.info(f"Module execution completed.\n")
