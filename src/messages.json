@@ -1,6 +1,6 @@
 {
     "hashFrag_description":"hashFrag is a tool developed to mitigate the impacts of homology-based data leakage in sequence-to-expression models. By identifying homology (based on pairwise alignment scores) in a sequence dataset, this tool can be used to filter homologous sequences spanning existing train-test splits (e.g., chromosomal splits), stratify a test split according to different levels of homology, or create homology-aware train-test splits.",
-    "blastn":{
+    "blastn_module":{
         "help":"A wrapper script calling BLASTn to identify candidate pairs of sequences sharing regions with high similarity.",
         "description":"A wrapper script calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity. If only 'fasta_path' is specified, all possible candidate pairs considered. However, if 'train_fasta_path' AND 'test_fasta_path' are specified, the BLAST database will be composed of the train sequences and each test sequence will be queried against the database.",
         "args":{
@@ -22,7 +22,7 @@
             "output_dir":"Directory to write BLASTn results."
         }
     },
-    "filter_candidates":{
+    "filter_candidates_module":{
         "help":"Filter candidate pairs based on a specified alignment score threshold (false-positive removal).",
         "description":"Filter candidate pairs based on a specified alignment score threshold. False-positive removal step. If called with 'lightning' mode, a corrected BLAST alignment score will be calculated for each candidate pair -- filtering will be with respect to this corrected score.",
         "args":{
@@ -36,7 +36,7 @@
             "output_dir":"Directory to output the filtered list of homologous sequence pairs (tab-delimited format)."
         }
     },
-    "filter_test_split":{
+    "filter_test_split_module":{
         "help":"Filter test sequences that exhibit homology with any train sequences.",
         "description":"Provided the filtered list of homology identified with the BLASTn algorithm, filter test sequences that exhibit homology with any train sequences.",
         "args":{
@@ -45,7 +45,7 @@
             "hits_path":"Filtered list of sequence pairs exhibiting high alignment score (i.e., homology)."
         }
     },
-    "stratify_test_split":{
+    "stratify_test_split_module":{
         "help":"Stratify the test split into subsplits based on their maximum alignment score to the sequences in the train split.",
         "description":"Given the calculated alignment scores for all candidates identified with the BLASTn algorithm, stratify the test split into subsplits based on their maximum alignment score to the sequences in the train split. This feature can be useful for investigating model performance as a function of test splits of varying degrees of orthogonality to the train split. If called with 'lightning' mode, a corrected BLAST alignment score will be calculated for each candidate pair and used for stratification.",
         "args":{
@@ -60,7 +60,7 @@
             "output_path":"A tab-delimited file containing the stratified level of each sequence in the test split."
         }
     },
-    "identify_homologous_groups":{
+    "identify_homologous_groups_module":{
         "help":"Identify all distinct groups of homologous sequences.",
         "description":"Provided the filtered list of homology identified with the BLASTn algorithm, identify all distinct groups of homologous sequences. This will only include homologous group labels for sequences exhibiting homology with at least one other sequence.",
         "args":{
@@ -68,7 +68,7 @@
             "output_path":"A tab-delimited file containing the homologous group labels that the relevant sequences in the test split belong to."
         }
     },
-    "create_orthogonal_splits":{
+    "create_orthogonal_splits_module":{
         "help":"Create homology-aware test-train splits.",
         "description":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits. This is accomplished via a graph-based method where nodes are sequences and edges denote a pair of sequences exhibiting homology. From there, the task involves identifying all homologous groups is equivalent to finding disconnected subgraphs in the population.",
         "args":{
@@ -81,15 +81,15 @@
             "output_dir":"The directory to write the created train-test splits."
         }
     },
-    "filter_existing_splits_pipeline":{
+    "filter_existing_splits":{
         "help":"Execute the full workflow of commands to filter homology spanning the input test splits.",
         "description":"Execute the full workflow of commands to filter homology spanning the input test splits. This involves identifying identifying pairs of sequences sharing similarities with BLAST, filtering candidates based on a specified threshold, and filtering the input test split such that there exist no shared homology between the train and test splits.."
     },
-    "stratify_test_split_pipeline":{
+    "stratify_test_split":{
         "help":"Execute the full workflow of commands to stratify the test split based on their maximum pairwise alignment score to the train split sequences.",
         "description":"Execute the full workflow of commands to stratify the test split based on their maximum pairwise alignment score to the train split sequences. This involves identifying pairs of sequences sharing similarities with BLAST, and then stratiyfing the test split into subsplits based on the corrected BLAST alignment score."
     },
-    "create_orthogonal_splits_pipeline":{
+    "create_orthogonal_splits":{
         "help":"Execute the full workflow of commands to create homology-aware train-test splits.",
         "description":"Execute the full workflow of commands to create homology-aware train-test splits. This involves identifying identifying pairs of sequences sharing similarities with BLAST, filtering candidates based on a specified threshold, identifying all the different subgroups of sequences exhibiting a distinct case of homology, and creating train-test splits with no leakage."
     }

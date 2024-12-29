@@ -1,71 +1,68 @@
 import os
-import gzip
-import random
 import logging
-from collections import defaultdict
-import utils.helper_functions as helper
+import argparse
+
+from modules.blastn_module import run as hashFrag_blastn
+from modules.filter_candidates_module import run as hashFrag_filter_candidates
+from modules.identify_homologous_groups_module import run as hashFrag_identify_groups
+from modules.create_orthogonal_splits_module import run as hashFrag_create_orthosplits
 
 def run(args):
 
-    logger = logging.getLogger(__name__.replace("modules.",""))
-    logger.info("Calling module...")
+    logger = logging.getLogger("pipeline")
+    logger.info("Initializing `create_orthogonal_splits` pipeline.\n")
 
-    if args.p_train+args.p_test != 1:
-        raise Exception("Intestid probabilities specified!")
+    label = "hashFrag"
 
-    random.seed(args.seed)
+    blastn_args = argparse.Namespace(
+        fasta_path=args.fasta_path,
+        train_fasta_path=None,
+        test_fasta_path=None,
+        word_size=args.word_size,
+        gapopen=args.gapopen,
+        gapextend=args.gapextend,
+        penalty=args.penalty,
+        reward=args.reward,
+        max_target_seqs=args.max_target_seqs,
+        e_value=args.e_value,
+        dust=args.dust,
+        blastdb_args=args.blastdb_args,
+        blastdb_label=label,
+        blastn_args=args.blastn_args,
+        threads=args.threads,
+        output_dir=args.output_dir
+    )
+    hashFrag_blastn(blastn_args)
+    blast_path = os.path.join(args.output_dir,f"{label}.blastn.out")
 
-    hit_idset = set()
-    homologous_groups = defaultdict(set)
+    filter_candidates_args = argparse.Namespace(
+        input_path=blast_path,
+        mode="lightning",
+        gapopen=args.gapopen,
+        gapextend=args.gapextend,
+        penalty=args.penalty,
+        reward=args.reward,
+        threshold=args.threshold,
+        output_dir=args.output_dir
+    )
+    hashFrag_filter_candidates(filter_candidates_args)
+    hits_path = os.path.join(args.output_dir,f"hashFrag_lightning.similar_pairs.tsv.gz")
+    homology_path = os.path.join(args.output_dir,f"hashFrag_lightning.homologous_groups.tsv")
+    identify_groups_args = argparse.Namespace(
+        hits_path=hits_path,
+        output_path=homology_path
+    )
+    hashFrag_identify_groups(identify_groups_args)
 
-    with open(args.homology_path,"r") as handle:
-        for line in handle:
-            sample_id,group_id = line.strip().split("\t")
-            hit_idset.add(sample_id)
-            homologous_groups[group_id].add(sample_id)
+    create_orthosplits_args = argparse.Namespace(
+        fasta_path=args.fasta_path,
+        homology_path=homology_path,
+        p_train=args.p_train,
+        p_test=args.p_test,
+        n_splits=args.n_splits,
+        seed=args.seed,
+        output_dir=args.output_dir
+    )
+    hashFrag_create_orthosplits(create_orthosplits_args)
 
-    homologous_groups = list(homologous_groups.values())
-
-    ids = helper.load_fasta_ids(args.fasta_path)
-    n = len(ids)
-
-    n_train = int(round(n*args.p_train,0))
-    n_test  = int(round(n*args.p_test,0))
-
-    if n_train+n_test != n:
-        raise Exception(f"Combined train ({n_train}) and test ({n_test}) size doesn't add up to expected total ({n}).")
-
-    logger.info(f"Creating {args.n_splits} orthogonal splits in directory: {args.output_dir}")
-    for i in range(args.n_splits):
-        split = f"split_{i+1:0>3}"
-
-        ids_ = ids.copy()
-
-        train_split = set()
-        while len(train_split) < n_train:
-            sample_id = random.choice(ids_)
-            complementary_sample_id = helper.get_complementary_id(sample_id)
-
-            train_split.update([sample_id,complementary_sample_id])
-            ids_.remove(sample_id)
-            ids_.remove(complementary_sample_id)
-
-            if sample_id in hit_idset:
-                for homologous_group in homologous_groups:
-                    if sample_id in homologous_group:
-                        ids_ = [id_ for id_ in ids_ if id_ not in homologous_group]
-                        train_split.update(homologous_group)
-
-        train_split = sorted(train_split)
-        test_split  = sorted(ids_)
-
-        filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.csv.gz"
-        outpath  = os.path.join(args.output_dir,filename)
-        with gzip.open(outpath,"wt") as handle:
-            handle.write("id,split\n")
-            for sample_id in train_split:
-                handle.write(f"{sample_id},train\n")
-            for sample_id in test_split:
-                handle.write(f"{sample_id},test\n")
-
-    logger.info(f"Module execution completed.\n")
+    logger.info("Completed execution of the pipeline to create homology-aware data splits!")

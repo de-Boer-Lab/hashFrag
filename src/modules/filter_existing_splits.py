@@ -2,22 +2,21 @@ import os
 import logging
 import argparse
 
-from modules.blastn import run as hashFrag_blastn
-from modules.filter_candidates import run as hashFrag_filter_candidates
-from modules.identify_homologous_groups import run as hashFrag_identify_groups
-from modules.create_orthogonal_splits import run as hashFrag_create_orthosplits
+from modules.blastn_module import run as hashFrag_blastn
+from modules.filter_candidates_module import run as hashFrag_filter_candidates
+from modules.filter_test_split_module import run as hashFrag_filter_test_split
 
 def run(args):
 
     logger = logging.getLogger("pipeline")
-    logger.info("Initializing `create_orthogonal_splits_pipeline`.\n")
+    logger.info("Initializing `filter_existing_splits` pipeline.\n")
 
     label = "hashFrag"
 
     blastn_args = argparse.Namespace(
-        fasta_path=args.fasta_path,
-        train_fasta_path=None,
-        test_fasta_path=None,
+        fasta_path=None,
+        train_fasta_path=args.train_fasta_path,
+        test_fasta_path=args.test_fasta_path,
         word_size=args.word_size,
         gapopen=args.gapopen,
         gapextend=args.gapextend,
@@ -47,22 +46,12 @@ def run(args):
     )
     hashFrag_filter_candidates(filter_candidates_args)
     hits_path = os.path.join(args.output_dir,f"hashFrag_lightning.similar_pairs.tsv.gz")
-    homology_path = os.path.join(args.output_dir,f"hashFrag_lightning.homologous_groups.tsv")
-    identify_groups_args = argparse.Namespace(
-        hits_path=hits_path,
-        output_path=homology_path
-    )
-    hashFrag_identify_groups(identify_groups_args)
 
-    create_orthosplits_args = argparse.Namespace(
-        fasta_path=args.fasta_path,
-        homology_path=homology_path,
-        p_train=args.p_train,
-        p_test=args.p_test,
-        n_splits=args.n_splits,
-        seed=args.seed,
-        output_dir=args.output_dir
+    filter_test_split_args = argparse.Namespace(
+        train_fasta_path=args.train_fasta_path,
+        test_fasta_path=args.test_fasta_path,
+        hits_path=hits_path
     )
-    hashFrag_create_orthosplits(create_orthosplits_args)
+    hashFrag_filter_test_split(filter_test_split_args)
 
-    logger.info("Completed execution of the pipeline to create homology-aware data splits!")
+    logger.info("Completed execution of the pipeline to filter existing data splits!")
