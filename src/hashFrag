@@ -44,7 +44,7 @@ def main():
     fp_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["filter_candidates_module"]["args"]["penalty"])
     fp_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["filter_candidates_module"]["args"]["reward"])
     fp_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
-    fp_parser.add_argument('-o','--out_dir',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["output_dir"])
+    fp_parser.add_argument('-o','--output_dir',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["output_dir"])
     fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_candidates_module").run(args))
     # filtering_parser.set_defaults(func=importlib.import_module("filter_candidates_module").run)
 
