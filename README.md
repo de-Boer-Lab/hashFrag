@@ -14,7 +14,7 @@ Because the precise definition of homology depends on the dataset and/or hypothe
 
 # Installation
 
-It is recommended to execute hashFrag in a `conda` or `virtualenv` environment with python version 3.10.
+It is recommended to execute hashFrag in a `conda` or `virtualenv` environment with Python version 3.10.
 
 Clone the repository using the following command:
 ```
