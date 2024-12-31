@@ -22,7 +22,7 @@ def instantiate_logger():
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "level": "DEBUG", 
+                "level": "INFO", 
                 "formatter": "default",
                 "stream": "ext://sys.stdout" 
             },
