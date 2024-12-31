@@ -14,9 +14,22 @@ Because the precise definition of homology depends on the dataset and/or hypothe
 
 # Installation
 
-## hashFrag installation
+It is recommended to execute hashFrag in a `conda` or `virtualenv` environment with python version 3.10.
 
+Clone the repository using the following command:
+```
+git clone https://github.com/de-Boer-Lab/hashFrag.git
+```
 
+Install dependencies located in the `requirements.txt` file with the folowing command:
+```
+pip install -r requirements.txt
+```
+
+Export the source directory to your `PATH` with the following command:
+```
+export PATH="$PATH:./hashFrag/src"
+```
 
 ## BLAST+ download
 
