@@ -1,6 +1,4 @@
 import os
-import sys
-import gzip
 import subprocess
 import utils.helper_functions as helper
 from glob import glob

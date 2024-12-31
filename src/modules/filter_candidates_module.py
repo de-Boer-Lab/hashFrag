@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-from glob import glob
 import utils.helper_functions as helper
 import logging
 

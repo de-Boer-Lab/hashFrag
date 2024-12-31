@@ -59,13 +59,8 @@ def run(args):
         train_split = sorted(train_split)
         test_split  = sorted(ids_)
 
-        filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.csv.gz"
+        filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.tsv.gz"
         outpath  = os.path.join(args.output_dir,filename)
-        with gzip.open(outpath,"wt") as handle:
-            handle.write("id,split\n")
-            for sample_id in train_split:
-                handle.write(f"{sample_id},train\n")
-            for sample_id in test_split:
-                handle.write(f"{sample_id},test\n")
+        helper.write_splits_to_tsv(train_split,test_split,outpath)
 
     logger.info(f"Module execution completed.\n")

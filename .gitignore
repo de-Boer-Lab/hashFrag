@@ -5,6 +5,7 @@
 *.blastdb.*
 *.blastn.*
 bkSW.o*
-*.gz
 .ipynb_checkpoints/
 __pycache__/
+*.work
+K562.*
