@@ -15,15 +15,20 @@ def run(args):
 
     random.seed(args.seed)
 
+    """
+    homologous_groups will be a list of sublists. A distinct group of sequences sharing 
+    homology make up each sublist. 
+
+    hit_idset will be used to efficiently identify sequences are orthogonal or share
+    homology with another sequence in the population.
+    """
     hit_idset = set()
     homologous_groups = defaultdict(set)
-
     with open(args.homology_path,"r") as handle:
         for line in handle:
             sample_id,group_id = line.strip().split("\t")
             hit_idset.add(sample_id)
             homologous_groups[group_id].add(sample_id)
-
     homologous_groups = list(homologous_groups.values())
 
     ids = helper.load_fasta_ids(args.fasta_path)
@@ -50,6 +55,10 @@ def run(args):
             ids_.remove(sample_id)
             ids_.remove(complementary_sample_id)
 
+            """
+            If the sequence shares homology with any other sequences, add the
+            homologous sequences into the train split as well.
+            """
             if sample_id in hit_idset:
                 for homologous_group in homologous_groups:
                     if sample_id in homologous_group:
@@ -57,7 +66,7 @@ def run(args):
                         train_split.update(homologous_group)
 
         train_split = sorted(train_split)
-        test_split  = sorted(ids_)
+        test_split  = sorted(ids_) # remaining sequences are sent train split
 
         filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.tsv.gz"
         outpath  = os.path.join(args.output_dir,filename)

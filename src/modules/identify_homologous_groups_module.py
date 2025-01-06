@@ -24,6 +24,13 @@ def get_symmetric_adjacency_dict(adjacency_dict):
     return symmetric_adjacency_dict
 
 def determine_homologous_communities(adjacency_dict):
+    """
+    From the adjacency dictionary representation of shared pairwise homology
+    between sequences, we can first convert it into a sparse matrix (scipy dependency). 
+    Next we construct a graph over the sparse matrix (igraph dependency), and then
+    homologous groups can be simply identified by collecting the connected components
+    in the graph.
+    """
 
     candidate_idset = set()
     for candidates in adjacency_dict.values():
@@ -43,7 +50,7 @@ def determine_homologous_communities(adjacency_dict):
     weights = [1]*len(row)
     sparse_mat = coo_matrix((weights,(row,col)),shape=(n,n)).tocsr()
 
-    g = ig.Graph.Weighted_Adjacency(
+    g = ig.Graph.Weighted_Adjacency( # only Weighted_Adjancency seems to support sparse inputs
         matrix=sparse_mat,
         mode="undirected",
         loops=False,

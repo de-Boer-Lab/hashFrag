@@ -25,6 +25,7 @@ def main():
     blast_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["blastn_module"]["args"]["penalty"])
     blast_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["blastn_module"]["args"]["reward"])
     blast_parser.add_argument('-m','--max_target_seqs',type=int,default=500,help=messages_dict["blastn_module"]["args"]["max_target_seqs"])
+    # blast_parser.add_argument('-M','--max_hsps',type=int,default=1,help=messages_dict["blastn_module"]["args"]["max_target_seqs"])
     blast_parser.add_argument('-e','--e_value',type=int,default=10,help=messages_dict["blastn_module"]["args"]["e_value"])
     blast_parser.add_argument('-d','--dust',type=str,default="no",help=messages_dict["blastn_module"]["args"]["dust"])
     blast_parser.add_argument('-b','--blastdb_args',type=str,default=None,help=messages_dict["blastn_module"]["args"]["blastdb_args"])

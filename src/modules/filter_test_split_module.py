@@ -13,7 +13,7 @@ def run(args):
     for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000):
         for qseqid, sseqid in zip(chunk_df["id_i"],chunk_df["id_j"]):
             hits_dict[qseqid].add(sseqid)
-            hits_dict[sseqid].add(qseqid)
+            hits_dict[sseqid].add(qseqid) # symmetric dictionary
 
     train_idset = set(helper.load_fasta_as_dictionary(args.train_fasta_path))
     test_fasta_dict = helper.load_fasta_as_dictionary(args.test_fasta_path)
@@ -22,6 +22,12 @@ def run(args):
     filtered_test_ids = []
     while test_ids:
         sample_id = test_ids.pop()
+
+        """
+        Any intersection indicates homology spanning the train-test splits. Thus,
+        we only include test sequences that are either orthogonal (empty set in hits dict)
+        or whose group of homologous sequences is disjoint from the train split.
+        """
         if hits_dict[sample_id].isdisjoint(train_idset):
             filtered_test_ids.append(sample_id)
     

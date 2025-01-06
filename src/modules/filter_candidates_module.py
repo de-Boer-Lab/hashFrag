@@ -18,12 +18,15 @@ def run(args):
 
     filtered_dfs = []
 
+    """
+    Parse through tabular input file in chunks to keep memory manageable.
+    """
     if args.mode == "lightning": # Expects a BLAST output file
         logger.info("Filtering based on corrected BLAST alignment scores (lightning mode).")
         try:
             for blast_df in pd.read_csv(args.input_path,names=blast_columns,sep="\t",chunksize=50_000):
                 helper.blast_file_validation(blast_df,blast_columns)
-                blast_df["corrected_blast_score"] = (
+                blast_df["corrected_blast_score"] = ( # corrected BLAST alignment score
                     args.reward*blast_df["positive"] +
                     args.penalty*blast_df["mismatch"] -
                     args.gapopen*blast_df["gapopen"] -

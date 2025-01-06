@@ -6,7 +6,7 @@ Neural networks have emerged as powerful tools to understand the functional rela
 
 <img src="./imgs/hashFrag_workflow_diagram.png">
 
-hashFrag represents a scalable tool that leverages [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) to help users address homology-based data leakage during model development. The general workflow involves utilizing the BLAST algorithm to identify “candidate” pairs of sequences with high similarity, filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage. 
+hashFrag is a scalable command-line tool that leverages [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) to help users address homology-based data leakage during model development. The general workflow involves identifying “candidate” pairs of sequences exhibiting high similarity with BLAST, filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage in existing or newly created splits. 
 
 We utilize local alignment scores to quantify the degree of homology between a pair of sequences. By default, the alignment score will be derived from the top BLAST alignment result for a pair of sequences (see Basic usage). However, users also have the option to provide precomputed alignment scores for added control over the homology search process (see Advanced usage). 
 
@@ -81,7 +81,7 @@ hashFrag create_orthogonal_splits \
 -t 60 \
 -o create_orthogonal_splits.work
 ```
-The creation of orthogonal train-test splits entails a graph-based method to identify all groups of sequences exhibiting distinct cases of homology. Splits are created proportionally. 
+The creation of orthogonal train-test splits involves encoding the homologous relationships between sequences as a sparse adjacency matrix (unweighted in accordance with the alignment score threshold). A graph representation of the adjancency matrix is constructed, and then distinct groups of homologous sequences can be identified by finding disconnected subgraphs. From the homology cluster information, splits with no leakage can be created proportionally. 
 
 # Advanced usage
 
@@ -93,7 +93,9 @@ The basic usage commands are implemented as pipelines that execute a series of m
 | `stratify_test_split`      | `blastn_module`, `stratify_test_split_module` |
 | `create_orthogonal_splits` | `blastn_module`, `filter_candidates_module`, `identify_homologous_groups_module`, `create_orthogonal_splits_module` |
 
-One particular reason why users might want to call modules individually is that it enables the use of precomputed pairwise scores. Specifically, after identifying candidate pairs of sequences with the BLAST algorithm, instead of using BLAST-derived alignment scores, users can provide the optimal [Smith-Waterman](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm) local alignment scores for candidate pairs. We found this can improve recall at a given alignment score threshold. When providing precomputed pairwise scores to hashFrag, the expected format is a tab-delimited file with 3 columns: `id_i`, `id_j`, and `score`. 
+The main advantage of calling modules individually is that it enables the use of precomputed pairwise scores. For example, after identifying candidate pairs of sequences with the BLAST algorithm, instead of using BLAST-derived alignment scores users can provide the optimal [Smith-Waterman](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm) local alignment scores for candidate pairs. This may be particularly important for improving recall in cases where the degree of homology between a pair of sequences is "modest". 
+
+When providing precomputed pairwise scores to hashFrag, the expected format is a tab-delimited file with 3 columns: `id_i`, `id_j`, and `score`. 
 
 `example.tsv`
 ```

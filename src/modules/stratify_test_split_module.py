@@ -62,7 +62,7 @@ def run(args):
 
     scores_dict = { sample_id:np.max(scores) for sample_id,scores in scores_dict.items() if scores }
     scores_df   = pd.DataFrame({"id":scores_dict.keys(),"score":scores_dict.values()})
-    scores_df["stratification"] = "orthogonal"
+    scores_df["stratification"] = "orthogonal" # instantiate all sequences as orthogonal
 
     min_bound = round_to_lower_bound(scores_df["score"].min(),args.step)
     max_bound = round_to_upper_bound(scores_df["score"].max(),args.step)
