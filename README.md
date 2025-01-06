@@ -6,7 +6,7 @@ Neural networks have emerged as powerful tools to understand the functional rela
 
 <img src="./imgs/hashFrag_workflow_diagram.png">
 
-hashFrag is a scalable command-line tool that leverages [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) to help users address homology-based data leakage during model development. The general workflow involves identifying “candidate” pairs of sequences exhibiting high similarity with BLAST, filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage in existing or newly created splits. 
+hashFrag is a scalable command-line tool to help users address homology-based data leakage during model development. The general workflow involves identifying “candidate” pairs of sequences exhibiting high similarity with [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi, filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage in existing or newly-created splits. 
 
 We utilize local alignment scores to quantify the degree of homology between a pair of sequences. By default, the alignment score will be derived from the top BLAST alignment result for a pair of sequences (see Basic usage). However, users also have the option to provide precomputed alignment scores for added control over the homology search process (see Advanced usage). 
 
