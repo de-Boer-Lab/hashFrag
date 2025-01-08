@@ -33,9 +33,9 @@ export PATH="$PATH:./hashFrag/src"
 
 ## BLAST+ download
 
-To install the BLAST command-line tool, follow the NCBI BLAST Command Line Applications User Manual found [here](https://www.ncbi.nlm.nih.gov/books/NBK569861/).
+To install the suite of BLAST applications, follow the instructions found at the NCBI BLAST Command Line Applications User Manual [here](https://www.ncbi.nlm.nih.gov/books/NBK279690/).
 
-Directly download the BLAST+ package executables for different operating systems at the following NCBI FTP page:
+Directly download the BLAST+ package executables for different operating systems at the following FTP page:
 > https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 
 Follow the instructions to extract the downloaded file and export binaries to your `PATH`. 

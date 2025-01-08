@@ -53,7 +53,7 @@ def run(args):
         logger.info(f"Existing BLAST database found. Path: {blastdb_path}")
         logger.info(f"Skipping `makeblastdb` call...")
     else:
-        if args.force:
+        if glob(blastdb_path+"*") and args.force:
             logger.warning(f"Overwriting previously computed BLAST database!") 
         with helper.open_fasta_file(reference_fasta_path) as fasta:
             command = " ".join([
@@ -71,7 +71,7 @@ def run(args):
         logger.info(f"Existing BLAST results file found. Path: {blastn_path}")
         logger.info(f"Skipping `blastn` call.") 
     else:
-        if args.force:
+        if os.path.exists(blastn_path) and args.force:
             logger.warning(f"Overwriting previously computed BLAST output file!") 
         with helper.open_fasta_file(query_fasta_path) as fasta:
             command = " ".join([
