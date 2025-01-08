@@ -49,36 +49,30 @@ def run(args):
 
         raise FileNotFoundError("Error: no input FASTA file(s) detected.")
 
-
-    """
-    Current behavior is to avoid calls to re-construct a BLAST database if the output file already exists.
-    TODO: add a force option  
-    """
-    if glob(blastdb_path+".*"):
-        logger.info(f"Existing BLAST database found. Path: {blastdb_path}\n\tskipping `makeblastdb` call.")
+    if glob(blastdb_path+"*") and not args.force:
+        logger.info(f"Existing BLAST database found. Path: {blastdb_path}")
+        logger.info(f"Skipping `makeblastdb` call...")
     else:
+        if args.force:
+            logger.warning(f"Overwriting previously computed BLAST database!") 
         with helper.open_fasta_file(reference_fasta_path) as fasta:
             command = " ".join([
                 "makeblastdb",
                 "-dbtype nucl",
                 "-input_type 'fasta'",
                 f"-title {label}",
-                f"-out {blastdb_path}",
-                " "
+                f"-out {blastdb_path}"
             ])
-            if args.blastdb_args:
-                command += args.blastdb_args
             process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
             helper.valdidate_subprocess_execution(process,command,logger)
             logger.info(f"BLAST DataBase construction finished and written to: {blastdb_path}")
- 
-    """
-    Similarly, do not run blastn if its tabular output file exists.
-    TODO: add a force option
-    """
-    if os.path.exists(blastn_path):
-        logger.info(f"Existing BLAST results file found. Path: {blastn_path}\n\tskipping `blastn` call.")
+        
+    if os.path.exists(blastn_path) and not args.force:
+        logger.info(f"Existing BLAST results file found. Path: {blastn_path}")
+        logger.info(f"Skipping `blastn` call.") 
     else:
+        if args.force:
+            logger.warning(f"Overwriting previously computed BLAST output file!") 
         with helper.open_fasta_file(query_fasta_path) as fasta:
             command = " ".join([
                 "blastn",
@@ -91,18 +85,17 @@ def run(args):
                 f"-reward {args.reward}",
                 f"-max_target_seqs {args.max_target_seqs}",
                 # f"-max_hsps {args.max_hsps}", # only concerned with the top alignment for a given query-subject pair
+                f"-xdrop_ungap {args.xdrop_ungap}",
+                f"-xdrop_gap {args.xdrop_gap}",
+                f"-xdrop_gap_final {args.xdrop_gap_final}",
                 f"-evalue {args.e_value}",
                 f"-dust {args.dust}",
                 f"-num_threads {args.threads}",
                 "-outfmt '6 std score positive gaps'",
-                "-strand plus",
-                " "
+                "-strand plus"
             ])
-            if args.blastn_args:
-                command += args.blastn_args
             process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
             helper.valdidate_subprocess_execution(process,command,logger)
-    
-        logger.info(f"BLASTn process finished and written to: {blastn_path}")
-    
+            logger.info(f"BLASTn process finished and written to: {blastn_path}")
+
     logger.info(f"Module execution completed.\n")
