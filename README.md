@@ -48,7 +48,7 @@ makeblastdb -version
 
 Example usage of hashFrag is provided below on an example dataset composed of 10,000 sequences (each 200 base pairs in length).
 
-Note that the `filter_existing_splits` and `create_orthogonal_splits` pipelines require specification of a pairwise alignment score threshold to define homology between sequences. If users do not have a predefined threshold for homology, we recommend computing pairwise alignment scores between a set of random (e.g., dinucleotide shuffled) sequences, and then defining a threshold above the distribution of values observed.
+Note that the `filter_existing_splits` and `create_orthogonal_splits` pipelines require specification of a pairwise alignment score threshold to define homology between sequences. If users do not have a predefined threshold for homology, we recommend computing pairwise alignment scores between a set of random (e.g., dinucleotide shuffled) genomic sequences, and then defining a threshold above the distribution of values observed.
 
 ## Existing data splits
 
