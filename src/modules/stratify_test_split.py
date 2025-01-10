@@ -23,13 +23,16 @@ def run(args):
         penalty=args.penalty,
         reward=args.reward,
         max_target_seqs=args.max_target_seqs,
+        xdrop_ungap=args.xdrop_ungap,
+        xdrop_gap=args.xdrop_gap,
+        xdrop_gap_final=args.xdrop_gap_final,
         e_value=args.e_value,
         dust=args.dust,
         blastdb_args=args.blastdb_args,
         blastdb_label=label,
         blastn_args=args.blastn_args,
         threads=args.threads,
-        force=args.force
+        force=args.force,
         output_dir=args.output_dir
     )
     hashFrag_blastn(blastn_args)
