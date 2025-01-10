@@ -8,7 +8,7 @@ Neural networks have emerged as powerful tools to understand the functional rela
 
 hashFrag is a scalable command-line tool to help users address homology-based data leakage during model development. The general workflow involves identifying “candidate” pairs of sequences exhibiting high similarity with [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi), filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage in existing or newly-created splits. 
 
-We utilize local alignment scores to quantify the degree of homology between a pair of sequences. By default, the alignment score will be derived from the top BLAST alignment result for a pair of sequences, which we refer to as "hashFrag-lightning" mode (see Basic usage). However, users also have the option to manually compute alignment scores to be used in downstream steps for added control over the homology search process. This version is referred to as "hashFrag-pure" mode (see Advanced usage). 
+We utilize local alignment scores to quantify the degree of homology between a pair of sequences. By default, the alignment score will be derived from the top BLAST alignment result for a pair of sequences, which we refer to as "hashFrag-lightning" mode (see Basic usage). However, users also have the option to manually compute alignment scores to be used in downstream steps for added control over the homology search process. This version, termed “hashFrag-pure” mode, can lead to improved recall when using exact alignment scores (see Advanced usage and `/tutorials` for more details).
 
 # Installation
 
@@ -27,6 +27,11 @@ pip install -r requirements.txt
 Export the source directory to your `PATH` with the following command:
 ```
 export PATH="$PATH:./hashFrag/src"
+```
+
+**Optional**: To avoid running this command every time you open a terminal, add it to your shell configuration file (e.g., `~/.bashrc`) with the following command:
+```
+echo 'export PATH="$PATH:./hashFrag/src"' >> ~/.bashrc
 ```
 
 ## BLAST+ download

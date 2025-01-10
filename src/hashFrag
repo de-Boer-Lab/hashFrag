@@ -109,6 +109,7 @@ def main():
     filter_pipeline_parser.add_argument('--blastdb_label',type=str,default=None,help=messages_dict["blastn_module"]["args"]["blastdb_label"])
     filter_pipeline_parser.add_argument('-B','--blastn_args',type=str,default=None,help=messages_dict["blastn_module"]["args"]["blastn_args"])
     filter_pipeline_parser.add_argument('-T','--threads',type=int,default=1,help=messages_dict["blastn_module"]["args"]["threads"])
+    filter_pipeline_parser.add_argument('--force', action='store_true', help="Force overwrite BLAST module procedure (default: False)")
     filter_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     filter_pipeline_parser.add_argument('-o','--output_dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
 
@@ -131,6 +132,7 @@ def main():
     stratify_pipeline_parser.add_argument('--blastdb_label',type=str,default=None,help=messages_dict["blastn_module"]["args"]["blastdb_label"])
     stratify_pipeline_parser.add_argument('-B','--blastn_args',type=str,default=None,help=messages_dict["blastn_module"]["args"]["blastn_args"])
     stratify_pipeline_parser.add_argument('-T','--threads',type=int,default=1,help=messages_dict["blastn_module"]["args"]["threads"])
+    stratify_pipeline_parser.add_argument('--force', action='store_true', help="Force overwrite BLAST module procedure (default: False)")
     stratify_pipeline_parser.add_argument('-o','--output_dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
     stratify_pipeline_parser.add_argument('-s','--step',type=int,default=10,help=messages_dict["stratify_test_split_module"]["args"]["step"])
 
@@ -157,6 +159,7 @@ def main():
     orthosplit_pipeline_parser.add_argument('--p_test',type=float,default=0.2,help=messages_dict["create_orthogonal_splits_module"]["args"]["p_test"])
     orthosplit_pipeline_parser.add_argument('-n','--n_splits',type=int,default=1,help=messages_dict["create_orthogonal_splits_module"]["args"]["n_splits"])
     orthosplit_pipeline_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_splits_module"]["args"]["seed"])
+    orthosplit_pipeline_parser.add_argument('--force', action='store_true', help="Force overwrite BLAST module procedure (default: False)")
     orthosplit_pipeline_parser.add_argument('-o','--output_dir',type=str,default=".",help=messages_dict["create_orthogonal_splits_module"]["args"]["output_dir"])
 
     orthosplit_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits").run(args))

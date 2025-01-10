@@ -30,6 +30,7 @@ def run(args):
         blastdb_label=label,
         blastn_args=args.blastn_args,
         threads=args.threads,
+        force=args.force,
         output_dir=args.output_dir
     )
     hashFrag_blastn(blastn_args)
