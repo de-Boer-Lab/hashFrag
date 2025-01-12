@@ -1,11 +1,20 @@
+# R history files
+.Rhistory
+
+# Data files
 *.csv
 *.csv.gz
 *.tsv.gz
 *.tsv
+*.work
+
+# BLAST output files
 *.blastdb.*
 *.blastn.*
-bkSW.o*
+
+# Python compiled files and directories
 .ipynb_checkpoints/
 __pycache__/
-*.work
-K562.*
+*.pyo
+*.pyd
+*.pyc
