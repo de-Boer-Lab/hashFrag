@@ -59,9 +59,9 @@ makeblastdb -version
 
 ### A minor note on the use of BLAST alignment scores in hashFrag
 
-The `lightning` (i.e., default) mode of hashFrag uses pairwise local alignment scores derived from the BLAST algorithm output. Rather than directly using the provided alignment scores, however, a *corrected* version of the alignment score is utilized.
+The `lightning` (default) mode of hashFrag uses pairwise local alignment scores derived from the BLAST algorithm. Rather than directly using the provided alignment scores, however, a *corrected* version of the alignment score is utilized.
 
-The scoring of gaps is intended to reflect the biological occurrence of insertions and deletions in sequences. Typically, there is a larger initial penalty associated with the *opening* of a gap, and any gaps following it incur a smaller gap *extension* penalty. Upon encountering a gap opening event, in addition to a `gapopen` penalty, the BLAST algorithm applies the `gapextend` penalty. To conform to exact local alignment scoring conventions, we correct the BLAST alignment scores such that only the `gapopen` penalty is applied to gap opening events.  
+Gap scoring is designed to reflect the biological occurrence of insertions and deletions in sequences. Typically, opening a gap incurs a larger penalty (`gapopen`), while subsequent extension of the same gap incurs smaller penalties (`gapextend`). Upon encountering a gap opening event, in addition to a `gapopen` penalty, the BLAST algorithm applies the `gapextend` penalty. To conform to exact local alignment scoring conventions, we adjust the BLAST scores such that only the `gapopen` penalty is applied to gap opening events.  
 
 # Basic usage
 
