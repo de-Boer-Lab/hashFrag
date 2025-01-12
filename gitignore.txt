@@ -1,0 +1,9 @@
+# R history files
+.Rhistory
+
+# Python compiled files and directories
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+*.pyo
+*.pyd
