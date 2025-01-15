@@ -59,7 +59,7 @@ makeblastdb -version
 
 ### A minor note on the use of BLAST alignment scores in hashFrag
 
-The `lightning` (default) mode of hashFrag uses pairwise local alignment scores derived from the BLAST algorithm. Rather than directly using the provided alignment scores, however, a *corrected* version of the alignment score is utilized.
+The `lightning` (default) mode of hashFrag uses pairwise local alignment scores derived from the BLAST algorithm. Rather than directly using the provided alignment scores, however, a *corrected* version of the alignment score is calculated.
 
 Gap scoring is designed to reflect the biological occurrence of insertions and deletions in sequences. Typically, opening a gap incurs a larger penalty (`gapopen`), while subsequent extension of the same gap incurs smaller penalties (`gapextend`). Upon encountering a gap *opening* event, the BLAST algorithm applies the `gapextend` penalty in addition to a `gapopen` penalty. To conform to exact local alignment scoring conventions, we adjust the BLAST scores such that only the `gapopen` penalty is applied to gap opening events.  
 
@@ -83,6 +83,10 @@ The default scoring parameters are as follows:
 > To remain consistent with BLAST scoring parameter specification, hashFrag expects a negative value for `penalty` but a positive value for `gapopen` and `gapextend` arguments (gap penalties will be subtracted from the alignment score during calculation). A positive value is expected for `reward`.
 
 Changing these parameters can drastically impact the identification process of homology. Please see permissible scoring parameter combinations for the BLASTn algorithm [here](https://www.ncbi.nlm.nih.gov/sites/books/NBK279684/) (Table D1).
+
+hashFrag expects both the forward and reverse orientation of sequences to be included in the input FASTA files. If a dataset has only one orientation, the user must add in the corresponding reverse orientations of sequences. Currently, hashFrag expects reverse strand sequences to be annotated with a `_Reversed` suffix. 
+
+> For example, for sequence ID `seq_A`, there should be a corresponding `seq_A_Reversed` sequence that is its reverse complement.
 
 ## Existing data splits
 
