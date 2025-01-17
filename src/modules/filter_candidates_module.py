@@ -61,6 +61,10 @@ def run(args):
     filtered_df['pair'] = filtered_df[['id_i','id_j']].apply(lambda x: tuple(sorted(x)),axis=1)
     filtered_df = filtered_df.drop_duplicates(subset='pair')
     filtered_df = filtered_df[["id_i","id_j","score"]]
+
+    if filtered_df.shape[0] == 0:
+        logger.warning(f"No sequence pairs with an alignment score above the specified threshold: {args.threshold}")
+
     filtered_path = os.path.join(args.output_dir,f"hashFrag_{args.mode}.similar_pairs.tsv.gz")
     filtered_df.to_csv(filtered_path,compression="gzip",sep="\t",index=False)
 

@@ -101,6 +101,29 @@ hashFrag filter_existing_splits \
 -o filter_existing_splits.work
 ```
 
+The table below describes relevant arguments for the `filter_existing_splits` execution:
+| Argument | Description | Expected input |
+|---|---|---|
+| `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
+| `--test_fasta_path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
+| `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
+| `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
+| `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
+| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
+| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
+| `-t`, `--threshold` | Alignment score threshold to define a pair of sequences as similar, or homologous (`filter_candidates_module`). | all real numbers (*Required*) |
+| `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
+| `-o`, `--output_dir` | Directory to write intermediate results. | string (Default: '.') |
+
+
 ### Stratify the test split sequences into an arbitrary number of levels based on their maximum alignment scores to the train split sequences. 
 ```
 hashFrag stratify_test_split \
@@ -108,7 +131,32 @@ hashFrag stratify_test_split \
 --test_fasta_path example_test_split.fa.gz \
 -o stratify_test_split.work
 ```
-Note that the sizes of each stratified level will not necessarily be balanced. This can be useful to better understand a model’s behaviour over test splits at varying levels of orthogonality to the sequences the model was trained on.
+
+* Note that the sizes of each stratified level will not necessarily be balanced.
+* This can be useful to better understand a model’s behaviour over test splits at varying levels of orthogonality to the sequences the model was trained on.
+
+
+The table below describes relevant arguments for the `stratify_test_split` execution:
+| Argument | Description | Expected input |
+|---|---|---|
+| `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
+| `--test_fasta_path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
+| `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
+| `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
+| `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
+| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
+| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
+| `-s`, `--step` | Step size for how large each alignment score range is (`stratify_test_split_module`). | positive integer (Default: 10) |
+| `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
+| `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
 
 ## Creating data splits
 
@@ -122,6 +170,31 @@ hashFrag create_orthogonal_splits \
 -o create_orthogonal_splits.work
 ```
 The creation of orthogonal train-test splits involves encoding the homologous relationships between sequences as a sparse adjacency matrix (unweighted in accordance with the alignment score threshold). A graph representation of the adjancency matrix is constructed, and then distinct groups of homologous sequences can be identified by finding disconnected subgraphs. From the homology cluster information, splits with no leakage can be created proportionally. 
+
+The table below describes relevant arguments for the `create_orthogonal_splits` execution:
+| Argument | Description | Expected input |
+|---|---|---|
+| `-f`, `--fasta_path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
+| `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
+| `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
+| `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
+| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
+| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
+| `-t`, `--threshold` | Alignment score threshold to define a pair of sequences as similar, or homologous (`filter_candidates_module`). | all real numbers (*Required*) |
+| `--p_train` | Proportion of sequences for the newly-created train data split (`create_orthogonal_splits_module`). | float (Default: 0.8) |
+| `--p_test` | Proportion of sequences for the newly-created test data split (`create_orthogonal_splits_module`). | float (Default: 0.2) |
+| `-n`, `--n_splits` | Number of train-test split replicates to create (`create_orthogonal_splits_module`). | positive integer (Default: 1) |
+| `-s`, `--seed` | Random seed for creation of homology-aware train-test splits (`create_orthogonal_splits_module`). | positive integer (Default: 21) |
+| `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
+| `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
 
 # Advanced usage
 
