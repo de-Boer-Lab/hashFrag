@@ -71,14 +71,7 @@ Note that the `filter_existing_splits` and `create_orthogonal_splits` pipelines 
 
 > If users do not have a predefined threshold for homology, we recommend computing pairwise alignment scores between a set of random (e.g., dinucleotide shuffled) genomic sequences, and then defining a threshold above the distribution of values observed.
 
-Defining homology in terms of alignment scores requires the specification of scoring parameters (e.g., `penalty`, `gapopen`, `gapextens`, and `reward` values).
-
-The default scoring parameters are as follows:
-
-* `penalty`: -1
-* `reward`: 1
-* `gapopen`: -2
-* `gapextend`: -1
+Defining homology in terms of alignment scores requires the specification of scoring parameters (e.g., `penalty`, `gapopen`, `gapextend`, and `reward` values).
 
 > To remain consistent with BLAST scoring parameter specification, hashFrag expects a negative value for `penalty` but a positive value for `gapopen` and `gapextend` arguments (gap penalties will be subtracted from the alignment score during calculation). A positive value is expected for `reward`.
 
