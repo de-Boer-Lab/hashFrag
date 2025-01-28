@@ -1,5 +1,6 @@
 <img src="./imgs/hashFrag_logo.png" width=800>
 
+
 # Overview
 
 Neural networks have emerged as powerful tools to understand the functional relationship between genomic sequences and various biological processes. However, current practices of training and evaluating models on genomic sequences may fail to account for the widespread homology that permeates the genome. Homology spanning train-test data splits can result in [data leakage](https://en.wikipedia.org/wiki/Leakage_(machine_learning)#:~:text=In%20statistics%20and%20machine%20learning,when%20run%20in%20a%20production), potentially leading to overestimation of model performance and a reduction in model reliability and generalizability.
@@ -94,7 +95,9 @@ hashFrag filter_existing_splits \
 -o filter_existing_splits.work
 ```
 
-The table below describes relevant arguments for the `filter_existing_splits` execution:
+<details>
+<summary>Expand to view the full table of arguments</summary>
+
 | Argument | Description | Expected input |
 |---|---|---|
 | `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
@@ -116,6 +119,7 @@ The table below describes relevant arguments for the `filter_existing_splits` ex
 | `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
 | `-o`, `--output_dir` | Directory to write intermediate results. | string (Default: '.') |
 
+</details>
 
 ### Stratify the test split sequences into an arbitrary number of levels based on their maximum alignment scores to the train split sequences. 
 ```
@@ -129,7 +133,9 @@ hashFrag stratify_test_split \
 * This can be useful to better understand a model’s behaviour over test splits at varying levels of orthogonality to the sequences the model was trained on.
 
 
-The table below describes relevant arguments for the `stratify_test_split` execution:
+<details>
+<summary>Expand to view the full table of arguments</summary>
+
 | Argument | Description | Expected input |
 |---|---|---|
 | `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
@@ -151,6 +157,8 @@ The table below describes relevant arguments for the `stratify_test_split` execu
 | `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
 | `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
 
+</details>
+
 ## Creating data splits
 
 When a single FASTA file is provided as input, hashFrag will characterize homology for all pairwise comparisons. This involves constructing a BLAST database over all sequences in the population and then subsequently querying each sequence to the databae. 
@@ -164,7 +172,9 @@ hashFrag create_orthogonal_splits \
 ```
 The creation of orthogonal train-test splits involves encoding the homologous relationships between sequences as a sparse adjacency matrix (unweighted in accordance with the alignment score threshold). A graph representation of the adjancency matrix is constructed, and then distinct groups of homologous sequences can be identified by finding disconnected subgraphs. From the homology cluster information, splits with no leakage can be created proportionally. 
 
-The table below describes relevant arguments for the `create_orthogonal_splits` execution:
+<details>
+<summary>Expand to view the full table of arguments</summary>
+
 | Argument | Description | Expected input |
 |---|---|---|
 | `-f`, `--fasta_path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped or gzipped) |
@@ -188,6 +198,10 @@ The table below describes relevant arguments for the `create_orthogonal_splits` 
 | `-s`, `--seed` | Random seed for creation of homology-aware train-test splits (`create_orthogonal_splits_module`). | positive integer (Default: 21) |
 | `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
 | `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
+
+</details>
+
+---
 
 # Advanced usage
 
@@ -215,4 +229,4 @@ For a full breakdown of available modules, please see the notebooks provided in 
 
 # Paper
 
-placeholder
+Check out our [preprint on bioRxiv](https://www.biorxiv.org/content/10.1101/2025.01.22.634321v1) titled, "*Detecting and avoiding homology-based data leakage in genome-trained sequence models*", for more details.

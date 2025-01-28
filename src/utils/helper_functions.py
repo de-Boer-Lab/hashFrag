@@ -88,10 +88,7 @@ def valdidate_subprocess_execution(process,command,logger):
             logger.info(f"BLASTn output: {process.stdout.decode('utf-8')}")
         if process.stderr:
             logger.error(f"BLASTn error: {process.stderr.decode('utf-8')}")
-        # print(f"Error executing the following command: {command}")
-        # print(process.stderr.decode("utf-8"))
         raise subprocess.CalledProcessError()
-    # print(process.stdout.decode("utf-8"))
 
     if process.stdout:
         logger.info(f"BLASTn output: {process.stdout.decode('utf-8')}")
