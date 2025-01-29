@@ -74,7 +74,7 @@ def get_complementary_id(seq_id):
 
 def write_splits_to_tsv(train_split,test_split,path):
     with gzip.open(path,"wt") as handle:
-        handle.write("id,split\n")
+        handle.write("id\tsplit\n")
         for sample_id in train_split:
             handle.write(f"{sample_id}\ttrain\n")
         for sample_id in test_split:
