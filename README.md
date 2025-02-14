@@ -98,24 +98,26 @@ hashFrag filter_existing_splits \
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
-| `--test_fasta_path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
-| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
+| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
 | `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
 | `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
-| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
-| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
-| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
-| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
-| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-m`, `--max-target-seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--exec-makeblastdb-only` | Only run the makeblastdb command (`blastn_module`). | Boolean (Default: False, set to True when specified) |
+| `--skip-revcomp` | Do not generate reverse complement of sequences comprising the BLAST database  (`blastn_module`). | Boolean (Default: False, generated if not skipped) |
+| `--xdrop-ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop-gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop-gap-final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e-value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
 | `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
-| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `--blastdb-label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
 | `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
 | `-t`, `--threshold` | Alignment score threshold to define a pair of sequences as similar, or homologous (`filter_candidates_module`). | all real numbers (*Required*) |
-| `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
-| `-o`, `--output_dir` | Directory to write intermediate results. | string (Default: '.') |
+| `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False, set to True when specified) |
+| `-o`, `--output-dir` | Directory to write intermediate results. | string (Default: '.') |
 
 </details>
 
@@ -136,24 +138,26 @@ hashFrag stratify_test_split \
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `--train_fasta_path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
-| `--test_fasta_path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
-| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
+| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
 | `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
 | `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
-| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
-| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
-| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
-| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
-| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-m`, `--max-target-seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--exec-makeblastdb-only` | Only run the makeblastdb command (`blastn_module`). | Boolean (Default: False, set to True when specified) |
+| `--skip-revcomp` | Do not generate reverse complement of sequences comprising the BLAST database  (`blastn_module`). | Boolean (Default: False, generated if not skipped) |
+| `--xdrop-ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop-gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop-gap-final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e-value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
 | `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
-| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `--blastdb-label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
 | `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
 | `-s`, `--step` | Step size for how large each alignment score range is (`stratify_test_split_module`). | positive integer (Default: 10) |
 | `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
-| `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
+| `-o`, `--output-dir` | Directory to write the created train-test splits. | string (Default: '.') |
 
 </details>
 
@@ -175,27 +179,29 @@ The creation of orthogonal train-test splits involves encoding the homologous re
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `-f`, `--fasta_path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped or gzipped) |
-| `-w`, `--word_size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
+| `-f`, `--fasta-path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped or gzipped) |
+| `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
 | `-p`, `--penalty` | Nucleotide mismatch penalty (`blastn_module`). | negative integer (Default: -1) |
 | `-r`, `--reward` | Nucleotide match reward (`blastn_module`). | positive integer (Default: 1) |
-| `-m`, `--max_target_seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
-| `--xdrop_ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
-| `--xdrop_gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
-| `--xdrop_gap_final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
-| `-e`, `--e_value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
+| `-m`, `--max-target-seqs` | Maximum number of target sequences that can be returned per query sequence (`blastn_module`). | positive integer (Default: 500) |
+| `--exec-makeblastdb-only` | Only run the makeblastdb command (`blastn_module`). | Boolean (Default: False, set to True when specified) |
+| `--skip-revcomp` | Do not generate reverse complement of sequences comprising the BLAST database  (`blastn_module`). | Boolean (Default: False, generated if not skipped) |
+| `--xdrop-ungap`| X-drop threshold (heuristic value in bits) for ungapped alignment extension (`blastn_module`). | real number (Default: 20) |
+| `--xdrop-gap` | X-drop threshold (heuristic value in bits) for gapped alignment extension (`blastn_module`). | real number (Default: 30) |
+| `--xdrop-gap-final` | X-drop threshold (heuristic value in bits) for final alignment extension (`blastn_module`) | real number (Default: 100) |
+| `-e`, `--e-value` | Likelihood threshold required to report a sequence as a match (`blastn_module`). | real number (Default: 10.0) |
 | `-d`, `--dust` | Filter for low-complexity (i.e., repetitive) regions (`blastn_module`). | Permissible values: {'yes', 'no'} (Default: 'no') |
-| `--blastdb_label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
+| `--blastdb-label` | Label for the BLAST database (`blastn_module`). | string (Default: None) |
 | `-T`, `--threads` | Number of threads to use for `blastn_module` execution. | positive integer (Default: 1) |
 | `-t`, `--threshold` | Alignment score threshold to define a pair of sequences as similar, or homologous (`filter_candidates_module`). | all real numbers (*Required*) |
-| `--p_train` | Proportion of sequences for the newly-created train data split (`create_orthogonal_splits_module`). | float (Default: 0.8) |
-| `--p_test` | Proportion of sequences for the newly-created test data split (`create_orthogonal_splits_module`). | float (Default: 0.2) |
-| `-n`, `--n_splits` | Number of train-test split replicates to create (`create_orthogonal_splits_module`). | positive integer (Default: 1) |
+| `--p-train` | Proportion of sequences for the newly-created train data split (`create_orthogonal_splits_module`). | float (Default: 0.8) |
+| `--p-test` | Proportion of sequences for the newly-created test data split (`create_orthogonal_splits_module`). | float (Default: 0.2) |
+| `-n`, `--n-splits` | Number of train-test split replicates to create (`create_orthogonal_splits_module`). | positive integer (Default: 1) |
 | `-s`, `--seed` | Random seed for creation of homology-aware train-test splits (`create_orthogonal_splits_module`). | positive integer (Default: 21) |
 | `--force` | Force overwrite existing `blastn_module` output files. | Boolean (Default: False) |
-| `-o`, `--output_dir` | Directory to write the created train-test splits. | string (Default: '.') |
+| `-o`, `--output-dir` | Directory to write the created train-test splits. | string (Default: '.') |
 
 </details>
 
