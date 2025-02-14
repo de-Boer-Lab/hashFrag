@@ -4,6 +4,7 @@ import logging
 import logging.config
 import subprocess
 from Bio import SeqIO
+from Bio.Seq import Seq
 
 def instantiate_logger():
     log_config = {
@@ -58,6 +59,18 @@ def load_fasta_as_dictionary(path,idset=None):
                 fasta_dict[record.id] = str(record.seq)   
     handle.close()
     return fasta_dict
+
+def generate_reverse_complement_fasta(input_path,output_path,compressed=True,suffix="_Reversed"):
+    inhandle = gzip.open(input_path,"rt") if input_path.endswith(".gz") else open(input_path,"r")
+    outhandle = gzip.open(output_path,"wt") if compressed else open(output_path,"w")
+
+    for record in SeqIO.parse(inhandle,"fasta"):
+        outhandle.write(f">{record.id}\n{str(record.seq)}\n")
+        outhandle.write(f">{record.id+suffix}\n{str(record.seq.reverse_complement())}\n")
+
+    inhandle.close()
+    outhandle.close()
+    return
 
 def load_fasta_ids(path):
     ids  = []

@@ -23,6 +23,8 @@ def run(args):
         penalty=args.penalty,
         reward=args.reward,
         max_target_seqs=args.max_target_seqs,
+        exec_makeblastdb_only=args.exec_makeblastdb_only,
+        skip_revcomp=args.skip_revcomp,
         xdrop_ungap=args.xdrop_ungap,
         xdrop_gap=args.xdrop_gap,
         xdrop_gap_final=args.xdrop_gap_final,

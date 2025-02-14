@@ -2,7 +2,7 @@
     "hashFrag_description":"hashFrag is a tool developed to mitigate the impacts of homology-based data leakage in sequence-to-expression models. By identifying homology (based on pairwise alignment scores) in a sequence dataset, this tool can be used to filter homologous sequences spanning existing train-test splits (e.g., chromosomal splits), stratify a test split according to different levels of homology, or create homology-aware train-test splits.",
     "blastn_module":{
         "help":"A wrapper script calling BLASTn to identify candidate pairs of sequences sharing regions with high similarity.",
-        "description":"A wrapper script calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity. If only 'fasta_path' is specified, all possible candidate pairs considered. However, if 'train_fasta_path' AND 'test_fasta_path' are specified, the BLAST database will be composed of the train sequences and each test sequence will be queried against the database.",
+        "description":"A wrapper script calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity. If only 'fasta-path' is specified, all possible candidate pairs considered. However, if 'train_fasta_path' AND 'test_fasta_path' are specified, the BLAST database will be composed of the train sequences and each test sequence will be queried against the database.",
         "args":{
             "fasta_path":"Input FASTA file containing all sequences in the dataset. All sequences will comprise the BLAST database and each sequence will subsequently be queried against it (supports unzipped or gzipped file formats).",
             "train_fasta_path":"Input FASTA file for the training data split, which will comprise the BLAST database. (supports unzipped or gzipped file formats)",
@@ -14,6 +14,8 @@
             "reward":"Nucleotide match reward in the alignment (Default: 1).",
             "max_target_seqs":"The maximum number of target sequences that can be returned per query sequence (Default: 500).",
             "max_hsps":"The maximum number of alignments returned for a given query-subject sequence pair (Default: none).",
+            "exec_makeblastdb_only":"Only run the makeblastdb command (default: False, set to True when specified).",
+            "skip_revcomp":"Skip generating reverse complement of sequences comprising the BLAST database (Default: False, generated if not skipped).",
             "xdrop_ungap":"X-drop threshold for ungapped alignment extension (Permissible values: real numbers; Default: 20).",
             "xdrop_gap":"X-drop threshold for gapped alignment extension (Permissible values: real numbers; Default: 30).",
             "xdrop_gap_final":"X-drop threshold for final alignment extension (Permissible values: real numbers; Default: 100).",
@@ -23,7 +25,7 @@
             "blastdb_label":"A label for the BLAST database.",
             "blastn_args":"Pass additional arguments for blastn call.",
             "threads":"The number of CPUs for database search (Default: 1).",
-            "force":"Force overwrite existing BLAST module output files (Default: False).",
+            "force":"Force overwrite existing BLAST module output files (Default: False, existing output files will not be overwritten).",
             "output_dir":"Directory to write BLASTn results (Default: '.')."
         }
     },

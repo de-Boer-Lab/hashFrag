@@ -78,9 +78,7 @@ Defining homology in terms of alignment scores requires the specification of sco
 
 Changing these parameters can drastically impact the identification process of homology. Please see permissible scoring parameter combinations for the BLASTn algorithm [here](https://www.ncbi.nlm.nih.gov/sites/books/NBK279684/) (Table D1).
 
-hashFrag expects both the forward and reverse orientation of sequences to be included in the input FASTA files. If a dataset has only one orientation, the user must add in the corresponding reverse orientations of sequences. Currently, hashFrag expects reverse strand sequences to be annotated with a `_Reversed` suffix. 
-
-> For example, for sequence ID `seq_A`, there should be a corresponding `seq_A_Reversed` sequence that is its reverse complement.
+By default, hashFrag generates the reverse complement sequences when creating the BLAST database. This ensures that query sequences are assessed for homology for both sequence orientations. If the input FASTA files already contains both forward and reverse sequence orientations, include the `--skip-revcomp` argument to skip this step.
 
 ## Existing data splits
 
@@ -89,9 +87,9 @@ Existing train-test data splits can be handled by providing two separate FASTA f
 ### Filter sequences in the test split exhibiting homology with any sequences in the train split.
 ```
 hashFrag filter_existing_splits \
---train_fasta_path example_train_split.fa.gz \
---test_fasta_path example_test_split.fa.gz \
--t 60 \ # threshold
+--train-fasta-path example_train_split.fa.gz \
+--test-fasta-path example_test_split.fa.gz \
+-t 60 \
 -o filter_existing_splits.work
 ```
 
@@ -124,8 +122,8 @@ hashFrag filter_existing_splits \
 ### Stratify the test split sequences into an arbitrary number of levels based on their maximum alignment scores to the train split sequences. 
 ```
 hashFrag stratify_test_split \
---train_fasta_path example_train_split.fa.gz \
---test_fasta_path example_test_split.fa.gz \
+--train-fasta-path example_train_split.fa.gz \
+--test-fasta-path example_test_split.fa.gz \
 -o stratify_test_split.work
 ```
 
