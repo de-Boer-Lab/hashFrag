@@ -78,7 +78,13 @@ Defining homology in terms of alignment scores requires the specification of sco
 
 Changing these parameters can drastically impact the identification process of homology. Please see permissible scoring parameter combinations for the BLASTn algorithm [here](https://www.ncbi.nlm.nih.gov/sites/books/NBK279684/) (Table D1).
 
-By default, hashFrag generates the reverse complement sequences when creating the BLAST database. This ensures that query sequences are assessed for homology for both sequence orientations. If the input FASTA files already contains both forward and reverse sequence orientations, include the `--skip-revcomp` argument to skip this step.
+By default, hashFrag generates reverse complement sequences when creating the BLAST database. This ensures that query sequences are assessed for homology for both sequence orientations. If the input FASTA files already contains both forward and reverse sequence orientations, include the `--skip-revcomp` argument to skip this step.
+
+> Currently, hashFrag expects reverse complementary sequences to be denoted with a `_Reversed` suffix in the sequence header.
+
+If both sequence orentations already exist in the input FASTA file(s), make sure one of the orientations is denoted with the `_Reversed` suffix. For example, if a sequence has a header such as `seq_A`, ensure that its reverse complement has the header `seq_A_Reversed`.
+
+* Note that a warning will be generated if there already exists sequences with the `_Reversed` suffix and the `--skip-revcomp` argument is NOT specified.
 
 ## Existing data splits
 

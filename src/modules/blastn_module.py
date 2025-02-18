@@ -35,7 +35,7 @@ def run(args):
         else:
             logger.info("Generating reverse complement reference sequences...")
             reference_fasta_path = os.path.join(args.output_dir,f"{label}.revcomps.fa.gz")
-            helper.generate_reverse_complement_fasta(args.train_fasta_path,reference_fasta_path)
+            helper.generate_reverse_complement_fasta(args.train_fasta_path,reference_fasta_path,logger)
 
         query_fasta_path = args.test_fasta_path # Query each of these sequences against the BLAST database
 
@@ -57,7 +57,7 @@ def run(args):
         else:
             logger.info("Generating reverse complement reference sequences...")
             reference_fasta_path = os.path.join(args.output_dir,f"{label}.revcomps.fa.gz")
-            helper.generate_reverse_complement_fasta(args.fasta_path,reference_fasta_path)
+            helper.generate_reverse_complement_fasta(args.fasta_path,reference_fasta_path,logger)
 
         query_fasta_path = args.fasta_path # Query each of these sequences against the BLAST database
 

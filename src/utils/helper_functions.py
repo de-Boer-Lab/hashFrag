@@ -60,17 +60,24 @@ def load_fasta_as_dictionary(path,idset=None):
     handle.close()
     return fasta_dict
 
-def generate_reverse_complement_fasta(input_path,output_path,compressed=True,suffix="_Reversed"):
+def generate_reverse_complement_fasta(input_path,output_path,logger,compressed=True,suffix="_Reversed"):
+    warn = False
+
     inhandle = gzip.open(input_path,"rt") if input_path.endswith(".gz") else open(input_path,"r")
     outhandle = gzip.open(output_path,"wt") if compressed else open(output_path,"w")
 
     for record in SeqIO.parse(inhandle,"fasta"):
+        if record.id.endswith(suffix):
+            warn = True
         outhandle.write(f">{record.id}\n{str(record.seq)}\n")
         outhandle.write(f">{record.id+suffix}\n{str(record.seq.reverse_complement())}\n")
 
     inhandle.close()
     outhandle.close()
-    return
+
+    if warn:
+        logger.warning(f"Encountered sequence headers already containing reverse complement suffix ('{suffix}')! Make sure to specify '--skip-revcomp' if reverse complements are already present.")
+    return warn
 
 def load_fasta_ids(path):
     ids  = []
