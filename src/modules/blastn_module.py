@@ -3,9 +3,6 @@ import subprocess
 import utils.helper_functions as helper
 from glob import glob
 import logging
-
-from os.path import basename
-
 from pathlib import Path
 
 def run(args):
@@ -15,73 +12,29 @@ def run(args):
 
     Path(args.output_dir).mkdir(parents=True,exist_ok=True)
 
-    # Existing train AND test splits provided as FASTA files 
-    if helper.is_valid_fasta_file(args.train_fasta_path) and helper.is_valid_fasta_file(args.test_fasta_path):
-        logger.info("Train and test FASTA files detected. Computing pairwise BLAST comparisons across splits...")
-        if args.blastdb_label is None:
-            train_label  = basename(args.train_fasta_path).replace(".fa.gz","").replace(".fa","")
-            test_label   = basename(args.test_fasta_path).replace(".fa.gz","").replace(".fa","")
-            label        = train_label
-            blastdb_path = os.path.join(args.output_dir,f"{train_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{test_label}.blastn.out")
-        else:
-            # Useful when running multiple BLASTs against the same data base
-            label        = args.blastdb_label
-            blastdb_path = os.path.join(args.output_dir,f"{args.blastdb_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{args.blastdb_label}.blastn.out")
-
-        if args.skip_revcomp:
-            reference_fasta_path = args.train_fasta_path # BLAST database
-        else:
-            logger.info("Generating reverse complement reference sequences...")
-            reference_fasta_path = os.path.join(args.output_dir,f"{label}.revcomps.fa.gz")
-            helper.generate_reverse_complement_fasta(args.train_fasta_path,reference_fasta_path,logger)
-
-        query_fasta_path = args.test_fasta_path # Query each of these sequences against the BLAST database
-
-    # All sequences in dataset in a single file
-    elif helper.is_valid_fasta_file(args.fasta_path):
-        logger.info("One FASTA files detected. Computing pairwise BLAST comparisons for all sequence-pairs...")
-        if args.blastdb_label is None:
-            label        = basename(args.fasta_path).replace(".fa.gz","").replace(".fa","")
-            blastdb_path = os.path.join(args.output_dir,f"{label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{label}.blastn.out")
-        else:
-            # Useful when running multiple BLASTs against the same data base
-            label        = args.blastdb_label
-            blastdb_path = os.path.join(args.output_dir,f"{args.blastdb_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{args.blastdb_label}.blastn.out")
-
-        if args.skip_revcomp:
-            reference_fasta_path = args.fasta_path # BLAST database
-        else:
-            logger.info("Generating reverse complement reference sequences...")
-            reference_fasta_path = os.path.join(args.output_dir,f"{label}.revcomps.fa.gz")
-            helper.generate_reverse_complement_fasta(args.fasta_path,reference_fasta_path,logger)
-
-        query_fasta_path = args.fasta_path # Query each of these sequences against the BLAST database
-
-    else:
-
-        raise FileNotFoundError("Error: no input FASTA file(s) detected.")
+    blast_module_files   = helper.blast_module_file_handler(args,logger)
+    reference_label      = blast_module_files[0]
+    reference_fasta_path = blast_module_files[1]
+    query_label          = blast_module_files[2]
+    query_fasta_path     = blast_module_files[3]
+    blastdb_path         = blast_module_files[4]
+    blastn_path          = blast_module_files[5]
 
     if glob(blastdb_path+"*") and not args.force:
         logger.info(f"Existing BLAST database found. Path: {blastdb_path}")
         logger.info(f"Skipping `makeblastdb` call...")
     else:
         if glob(blastdb_path+"*") and args.force:
-            logger.warning(f"Overwriting previously computed BLAST database!") 
-        with helper.open_fasta_file(reference_fasta_path) as fasta:
-            command = " ".join([
-                "makeblastdb",
-                "-dbtype nucl",
-                "-input_type 'fasta'",
-                f"-title {label}",
-                f"-out {blastdb_path}"
-            ])
-            process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
-            helper.valdidate_subprocess_execution(process,command,logger)
-            logger.info(f"BLAST DataBase construction finished and written to: {blastdb_path}")
+            logger.warning(f"Overwriting previously computed BLAST database!")
+
+        command = helper.construct_makeblastdb_command(
+            fasta_path=reference_fasta_path,
+            label=reference_label,
+            blastdb_path=blastdb_path
+        )
+        process = subprocess.run(command,shell=True,capture_output=True)
+        helper.validate_subprocess_execution(process,command,logger)
+        logger.info(f"BLAST DataBase construction finished and written to: {blastdb_path}")
         
     if not args.exec_makeblastdb_only:
 
@@ -91,29 +44,26 @@ def run(args):
         else:
             if os.path.exists(blastn_path) and args.force:
                 logger.warning(f"Overwriting previously computed BLAST output file!") 
-            with helper.open_fasta_file(query_fasta_path) as fasta:
-                command = " ".join([
-                    "blastn",
-                    f"-db {blastdb_path}",
-                    f"-out {blastn_path}",
-                    f"-word_size {args.word_size}",
-                    f"-gapopen {args.gapopen}",
-                    f"-gapextend {args.gapextend}",
-                    f"-penalty {args.penalty}",
-                    f"-reward {args.reward}",
-                    f"-max_target_seqs {args.max_target_seqs}",
-                    # f"-max_hsps {args.max_hsps}", # only concerned with the top alignment for a given query-subject pair
-                    f"-xdrop_ungap {args.xdrop_ungap}",
-                    f"-xdrop_gap {args.xdrop_gap}",
-                    f"-xdrop_gap_final {args.xdrop_gap_final}",
-                    f"-evalue {args.e_value}",
-                    f"-dust {args.dust}",
-                    f"-num_threads {args.threads}",
-                    "-outfmt '6 std score positive gaps'",
-                    "-strand plus"
-                ])
-                process = subprocess.run(command,input=fasta.read(),shell=True,capture_output=True)
-                helper.valdidate_subprocess_execution(process,command,logger)
-                logger.info(f"BLASTn process finished and written to: {blastn_path}")
+
+            command = helper.construct_blastn_command(
+                query_path=query_fasta_path,
+                blastdb_path=blastdb_path,
+                blastn_path=blastn_path,
+                word_size=args.word_size,
+                gapopen=args.gapopen,
+                gapextend=args.gapextend,
+                penalty=args.penalty,
+                reward=args.reward,
+                max_target_seqs=args.max_target_seqs,
+                xdrop_ungap=args.xdrop_ungap,
+                xdrop_gap=args.xdrop_gap,
+                xdrop_gap_final=args.xdrop_gap_final,
+                evalue=args.evalue,
+                dust=args.dust,
+                threads=args.threads
+            )
+            process = subprocess.run(command,shell=True,capture_output=True)
+            helper.validate_subprocess_execution(process,command,logger)
+            logger.info(f"BLASTn process finished and written to: {blastn_path}")
 
     logger.info(f"Module execution completed.\n")

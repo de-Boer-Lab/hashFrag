@@ -7,7 +7,6 @@
 *.tsv.gz
 *.tsv
 *.work
-
 # BLAST output files
 *.blastdb.*
 *.blastn.*

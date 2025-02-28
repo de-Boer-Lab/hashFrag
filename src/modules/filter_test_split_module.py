@@ -33,7 +33,7 @@ def run(args):
     
     logger.info(f"{n_test-len(filtered_test_ids)} sequences filtered from test split.")
 
-    filtered_test_fasta_path = args.test_fasta_path.replace(".fa.gz",".filtered.fa.gz")
+    filtered_test_fasta_path = args.test_fasta_path.replace(".fa",".filtered.fa")
     with gzip.open(filtered_test_fasta_path,"wt") as handle:
         for sample_id in filtered_test_ids:
             handle.write(f">{sample_id}\n{test_fasta_dict[sample_id]}\n")

@@ -68,7 +68,7 @@ def run(args):
         train_split = sorted(train_split)
         test_split  = sorted(ids_) # remaining sequences are sent train split
 
-        filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.tsv.gz"
+        filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.tsv"
         outpath  = os.path.join(args.output_dir,filename)
         helper.write_splits_to_tsv(train_split,test_split,outpath)
 

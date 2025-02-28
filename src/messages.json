@@ -19,7 +19,7 @@
             "xdrop_ungap":"X-drop threshold for ungapped alignment extension (Permissible values: real numbers; Default: 20).",
             "xdrop_gap":"X-drop threshold for gapped alignment extension (Permissible values: real numbers; Default: 30).",
             "xdrop_gap_final":"X-drop threshold for final alignment extension (Permissible values: real numbers; Default: 100).",
-            "e_value":"The likelihood threshold required to report sequences as a match (Default: 10).",
+            "evalue":"The likelihood threshold required to report sequences as a match (Default: 10).",
             "dust":"Filter low-complexity (e.g., repetitive) regions (Default: 'no').",
             "blastdb_args":"Pass additional arguments for makeblastdb call.",
             "blastdb_label":"A label for the BLAST database.",
@@ -27,6 +27,20 @@
             "threads":"The number of CPUs for database search (Default: 1).",
             "force":"Force overwrite existing BLAST module output files (Default: False, existing output files will not be overwritten).",
             "output_dir":"Directory to write BLASTn results (Default: '.')."
+        }
+    },
+    "blastn_array_module":{
+        "help":"A wrapper script to set up an array job calling BLASTn to identify candidate pairs of sequences sharing regions with high similarity.",
+        "description":"A wrapper script that sets up an array job calling the BLASTn algorithm to identify candidate pairs of sequences sharing regions with high similarity. If only 'fasta-path' is specified, all possible candidate pairs considered. However, if 'train_fasta_path' AND 'test_fasta_path' are specified, the BLAST database will be composed of the train sequences and each test sequence will be queried against the database.",
+        "args":{
+            "query_partition_size":"Maximum number of sequences in each partitioned FASTA file (Default: 500 sequences per partitioned FASTA file).",
+            "job_account":"HPC account name (if necessary).",
+            "job_time":"Maximum runtime limit for the job (format: `D-HH:MM:SS`).",
+            "job_memory":"Total amount of memory (in megabytes) for the job (e.g., `16GB`).",
+            "num_cpus":"Number of CPUs per task.",
+            "environment_path":"Path to a shell script that sets up the environment to run hashFrag. This can involve activating a virtual environment, loading the relevant modules, or setting the PATH variable.",
+            "job_name":"Name of HPC job.",
+            "job_scheduler":"The job scheduler to setup the array job for (Permissible values: {'slurm'}; Default: 'slurm')."
         }
     },
     "filter_candidates_module":{

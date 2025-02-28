@@ -78,7 +78,7 @@ Defining homology in terms of alignment scores requires the specification of sco
 
 Changing these parameters can drastically impact the identification process of homology. Please see permissible scoring parameter combinations for the BLASTn algorithm [here](https://www.ncbi.nlm.nih.gov/sites/books/NBK279684/) (Table D1).
 
-By default, hashFrag generates reverse complement sequences when creating the BLAST database. This ensures that query sequences are assessed for homology for both sequence orientations. If the input FASTA files already contains both forward and reverse sequence orientations, include the `--skip-revcomp` argument to skip this step.
+By default, hashFrag generates reverse complement sequences when creating the BLAST database. This ensures that query sequences are assessed for homology for both sequence orientations. If the input FASTA files already contain both forward and reverse sequence orientations, include the `--skip-revcomp` argument to skip this step.
 
 > Currently, hashFrag expects reverse complementary sequences to be denoted with a `_Reversed` suffix in the sequence header.
 
@@ -93,9 +93,10 @@ Existing train-test data splits can be handled by providing two separate FASTA f
 ### Filter sequences in the test split exhibiting homology with any sequences in the train split.
 ```
 hashFrag filter_existing_splits \
---train-fasta-path example_train_split.fa.gz \
---test-fasta-path example_test_split.fa.gz \
+--train-fasta-path example_train_split.fa \
+--test-fasta-path example_test_split.fa \
 -t 60 \
+--skip-revcomp \
 -o filter_existing_splits.work
 ```
 
@@ -104,8 +105,8 @@ hashFrag filter_existing_splits \
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
-| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped) |
+| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped) |
 | `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
@@ -130,8 +131,9 @@ hashFrag filter_existing_splits \
 ### Stratify the test split sequences into an arbitrary number of levels based on their maximum alignment scores to the train split sequences. 
 ```
 hashFrag stratify_test_split \
---train-fasta-path example_train_split.fa.gz \
---test-fasta-path example_test_split.fa.gz \
+--train-fasta-path example_train_split.fa \
+--test-fasta-path example_test_split.fa \
+--skip-revcomp \
 -o stratify_test_split.work
 ```
 
@@ -144,8 +146,8 @@ hashFrag stratify_test_split \
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped or gzipped) |
-| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped or gzipped) |
+| `--train-fasta-path` | Input file containing train split sequences. | FASTA file path (unzipped) |
+| `--test-fasta-path` | Input file containing test split sequences. | FASTA file path (unzipped) |
 | `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
@@ -174,8 +176,9 @@ When a single FASTA file is provided as input, hashFrag will characterize homolo
 ### Create homology-aware (i.g., orthogonal) train-test data splits.
 ```
 hashFrag create_orthogonal_splits \
--f example_full_dataset.fa.gz \
+-f example_full_dataset.fa \
 -t 60 \
+--skip-revcomp \
 -o create_orthogonal_splits.work
 ```
 The creation of orthogonal train-test splits involves encoding the homologous relationships between sequences as a sparse adjacency matrix (unweighted in accordance with the alignment score threshold). A graph representation of the adjancency matrix is constructed, and then distinct groups of homologous sequences can be identified by finding disconnected subgraphs. From the homology cluster information, splits with no leakage can be created proportionally. 
@@ -185,7 +188,7 @@ The creation of orthogonal train-test splits involves encoding the homologous re
 
 | Argument | Description | Expected input |
 |---|---|---|
-| `-f`, `--fasta-path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped or gzipped) |
+| `-f`, `--fasta-path` | Input file containing all sequences in the dataset. | FASTA file path (unzipped) |
 | `-w`, `--word-size` | Length of exact match to intialize alignment score calculation (`blastn_module`). | integer (Default: 11) |
 | `-g`, `--gapopen` | Penalty for opening a gap in the alignment (`blastn_module`) | positive integer (Default: 2) |
 | `-x`, `--gapextend` | Penalty for extending an existing gap in the alignment (`blastn_module`). | positive integer (Default: 1) |
@@ -219,11 +222,13 @@ The basic usage commands in the above section are implemented as pipelines that 
 
 | Pipeline                   | Modules            |
 |----------------------------|-----------------------|
-| `filter_existing_splits`   | `blastn_module`, `filter_candidates_module`, `filter_test_split_module` |
-| `stratify_test_split`      | `blastn_module`, `stratify_test_split_module` |
-| `create_orthogonal_splits` | `blastn_module`, `filter_candidates_module`, `identify_homologous_groups_module`, `create_orthogonal_splits_module` |
+| `filter_existing_splits`   | `blastn_module`, `process_blast_results_module`, `filter_candidates_module`, `filter_test_split_module` |
+| `stratify_test_split`      | `blastn_module`, `process_blast_results_module`, `stratify_test_split_module` |
+| `create_orthogonal_splits` | `blastn_module`, `process_blast_results_module`, `filter_candidates_module`, `identify_homologous_groups_module`, `create_orthogonal_splits_module` |
 
-The main advantage of calling modules individually is that it enables the use of manually computed pairwise scores. For example, after identifying candidate pairs of sequences with the BLAST algorithm, instead of using BLAST-derived alignment scores users can provide the exact [Smith-Waterman](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm) local alignment scores for candidate pairs. This was found to improve the recall of homologous sequences on the datasets tested at the expense of additional computational costs.
+Each module has a `-h` or `--help` command to print its respective arguments (e.g., `hashFrag blastn_module -h`).
+ 
+One of the main advantages of calling modules individually is that it enables the use of manually computed pairwise scores. For example, after identifying candidate pairs of sequences with the BLAST algorithm, instead of using BLAST-derived alignment scores users can provide the exact [Smith-Waterman](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm) local alignment scores for candidate pairs. This was found to improve the recall of homologous sequences on the datasets tested at the expense of additional computational costs.
 
 When providing precomputed pairwise scores to hashFrag, the expected format is a tab-delimited file with 3 columns: `id_i`, `id_j`, and `score`. 
 
@@ -236,6 +241,60 @@ seq_E	seq_A	100
 ```
 
 For a full breakdown of available modules, please see the notebooks provided in the `/tutorial` directory.
+
+## Generating array job scripts for large-scale hashFrag runs on an HPC
+
+For large-scale datasets, it is recommended to run hashFrag on an HPC cluster. The `blastn_array_module` can be used to generate an array job script that users can manually submit to carry out the BLAST similarity search process in partitions. Specifically, a BLAST database will be created over the complete input FASTA file and the query FASTA file will be partitioned into smaller chunks (based on the number of sequences), where each chunk is setup to be executed independently as part of an array job.
+
+> hashFrag currently supports the setup of array job scripts for the following job schedulers: SLURM
+
+After querying a partitioned FASTA file to the database constructed over the complete FASTA input, BLAST results will automatically processed to select the top alignment for each query-subject sequence pair.
+
+Note that this module also expects the path to a shell script to carry out the setup of the HPC environment in each job. This script will be sourced at the start of each job. It should activate any virtual environments, load any relevant modules (e.g., `BLAST+`), or set PATH variable.
+
+### Example
+
+```
+hashFrag blastn_array_module \
+--train-fasta-path example_train_split.fa \
+--test-fasta-path example_test_split.fa \
+--skip-revcomp \
+--job-account "<account-name>" \
+--job-time "6:00:00" \
+--job-memory "16GB" \
+--num-cpus 4 \
+--environment-path "/<path_to>/set_env.sh" \
+-o blastn_array_job.work
+```
+
+This will create the following job script file: `./blastn_array_job.work/hashFrag.blastn_array_module.array_jobs.sh`
+```
+#!/bin/bash
+#SBATCH --account=<account-name>
+#SBATCH --job-name=hashFrag
+#SBATCH --ntasks=1
+#SBATCH --mem=16GB
+#SBATCH --cpus-per-task=4
+#SBATCH --time=6:00:00
+#SBATCH --array=1-4
+#SBATCH --output=blastn_array_job.work/job_stdout_files/hashFrag.jobid_%A_%a.out
+#SBATCH --error=blastn_array_job.work/job_stderr_files/hashFrag.jobid_%A_%a.err
+
+source /<path_to>/set_env.sh
+
+BLASTDB_PATH=blastn_array_job.work/example_train_split.blastdb
+QUERIES_PATH=blastn_array_job.work/query_fasta_paths.txt
+BLAST_DIR=blastn_array_job.work/blast_results
+QUERY_PATH=$( sed -n ${SLURM_ARRAY_TASK_ID}p $QUERIES_PATH )
+LABEL=$( basename -s '.fa' $QUERY_PATH )
+BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.out
+PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv
+
+blastn -query $QUERY_PATH -db $BLASTDB_PATH -out $BLASTN_PATH -word_size 11 -gapopen 2 -gapextend 1 -penalty -1 -reward 1 -max_target_seqs 500 -xdrop_ungap 20 -xdrop_gap 30 -xdrop_gap_final 100 -evalue 10 -dust no -num_threads 4 -outfmt '6 std score positive gaps' -strand plus
+
+hashFrag process_blast_results_module --blastn-path $BLASTN_PATH --processed-blastn-path $PROCESSED_BLASTN_PATH
+```
+Submit this with the following command: `sbatch ./blastn_array_job.work/hashFrag.blastn_array_module.array_jobs.sh`
 
 # Paper
 

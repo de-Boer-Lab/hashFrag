@@ -5,12 +5,6 @@ import pandas as pd
 import utils.helper_functions as helper
 import logging
 
-blast_columns = [
-    "qseqid","sseqid","pident","length","mismatch",
-    "gapopen","qstart","qend","sstart","send","evalue",
-    "bitscore","uncorrected_blast_score","positive","gaps"
-]
-
 score_columns = ["id_i","id_j","score"]
 
 def round_to_lower_bound(number,step):
@@ -28,37 +22,16 @@ def run(args):
     idset = set(ids)
     scores_dict = { sample_id:[] for sample_id in ids }
 
-    if args.mode == "lightning": # Expects a BLAST output file
-        logger.info("Stratifying based on corrected BLAST alignment scores (lightning mode).")
-        try:
-            for blast_df in pd.read_csv(args.input_path,names=blast_columns,sep="\t",chunksize=50_000):
-                helper.blast_file_validation(blast_df,blast_columns)
-                blast_df["corrected_blast_score"] = (
-                    args.reward*blast_df["positive"] +
-                    args.penalty*blast_df["mismatch"] -
-                    args.gapopen*blast_df["gapopen"] -
-                    args.gapextend*(blast_df["gaps"]-blast_df["gapopen"])
-                )
-                for sample_id,score in zip(blast_df["qseqid"],blast_df["corrected_blast_score"]):
-                    if sample_id not in idset:
-                        raise Exception("Error: Sequence ID not found in test split.")
-                    scores_dict[sample_id].append(score)
-        except:
-            raise Exception("Error: Unable to read BLAST file (lightning mode).")
-    
-    elif args.mode == "pure": # Expects a custom tsv file
-        logger.info("Stratifying based on precomputed alignment scores (pure mode).")
-        try:
-            for score_df in pd.read_csv(args.input_path,names=score_columns,sep="\t",chunksize=50_000):
-                for sample_id,score in zip(score_df["id_i"],score_df["score"]):
-                    if sample_id not in idset:
-                        raise Exception("Error: Sequence ID not found in test split.")
-                    scores_dict[sample_id].append(score)
-        except:
-            raise Exception("Error: Unable to read custom scores (pure mode).")
-    
-    else:
-        raise Exception("Error: invalid 'mode' specified. Permissible values include: {'lightning', 'pure'}.")
+    logger.info("Stratifying based on the provided pairwise scores...")
+    try:
+        for df in pd.read_csv(args.input_path,names=score_columns,sep="\t",chunksize=50_000):
+            for id_i,id_j,score in zip(df["id_i"],df["id_j"],df["score"]):
+                if id_i in idset:
+                    scores_dict[id_i].append(score)
+                if id_j in idset:
+                    scores_dict[id_j].append(score)
+    except:
+        raise Exception(f"Unable to parse the provided input file ({args.input_path}).")
 
     scores_dict = { sample_id:np.max(scores) for sample_id,scores in scores_dict.items() if scores }
     scores_df   = pd.DataFrame({"id":scores_dict.keys(),"score":scores_dict.values()})
@@ -72,7 +45,7 @@ def run(args):
         stratified_idset = set(scores_df[(scores_df["score"] >= lower_bound) & (scores_df["score"] < upper_bound)]["id"].tolist())
         scores_df.loc[scores_df["id"].isin(stratified_idset),"stratification"] = label
 
-    scores_df.to_csv(args.output_path,compression="gzip",sep="\t",index=False)
+    scores_df.to_csv(args.output_path,sep="\t",index=False)
 
     logger.info(f"Stratification results written to: {args.output_path}")
     logger.info(f"Module execution completed.\n")
