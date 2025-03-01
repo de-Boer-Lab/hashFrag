@@ -246,7 +246,7 @@ For a full breakdown of available modules, please see the notebooks provided in 
 
 For large-scale datasets, it is recommended to run hashFrag on an HPC cluster. The `blastn_array_module` can be used to generate an array job script that users can manually submit to carry out the BLAST similarity search process in partitions. Specifically, a BLAST database will be created over the complete input FASTA file, and the query FASTA file will be partitioned into smaller chunks based on the number of sequences, which can be set with the `--query-partition-size` argument. Each chunk of the query sequences is then setup to be executed independently as part of an array job.
 
-> hashFrag currently supports the setup of array job scripts for the following job schedulers: SLURM
+> hashFrag currently supports the setup of array job scripts for the following job schedulers: SLURM, Sun Grid Engine (SGE)
 
 Note that the `blastn_array_module` module expects the path to a shell script to carry out the setup of the HPC environment in each job (`--environment-path` argument). This script will be sourced at the start of each job. It should activate any virtual environments (if using), load relevant modules (e.g., `BLAST+`), and set the PATH variable.
 
