@@ -216,164 +216,117 @@ def instantiate_job_script(queries_path,n_queries,blastdb_path,blast_dir,
             "QUERY_PATH=$( sed -n ${SLURM_ARRAY_TASK_ID}p $QUERIES_PATH )",
             "LABEL=$( basename -s '.fa' $QUERY_PATH )",
             "BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.out",
-            "PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv\n"
+            "PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv\n",
+            'echo "hashFrag blastn_array_module"',
+            'echo "BLAST database path: $BLASTDB_PATH"',
+            'echo "Query path: $QUERY_PATH"',
+            'echo "BLAST results path: $BLASTN_PATH"',
+            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH\n"\n'
+        ]
+    elif job_scheduler == "sge":
+        job_script = [
+            "#!/bin/bash",
+            f"#$ -N {job_name}",
+            f"#$ -l s_vmem={job_memory}",
+            f"#$ -pe def_slot {num_cpus}",
+            f"#$ -t 1:{n_queries}",
+            f"#$ -o {stdout_dir}",
+            f"#$ -e {stderr_dir}\n",
+            f"source {environment_path}\n",
+            f"BLASTDB_PATH={blastdb_path}",
+            f"QUERIES_PATH={queries_path}",
+            f"BLAST_DIR={blast_dir}",
+            "QUERY_PATH=$( sed -n ${SGE_TASK_ID}p $QUERIES_PATH )",
+            "LABEL=$( basename -s '.fa' $QUERY_PATH )",
+            "BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.out",
+            "PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv\n",
+            'echo "hashFrag blastn_array_module"',
+            'echo "BLAST database path: $BLASTDB_PATH"',
+            'echo "Query path: $QUERY_PATH"',
+            'echo "BLAST results path: $BLASTN_PATH"',
+            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH"\n'
         ]
     else:
         raise Exception(f"Unrecognized `job_scheduler` specified ({job_scheduler} is invalid or currently not supported)!")
 
     return job_script
 
-def construct_job_script(queries_path,n_queries,blastdb_path,out_dir,
-                         word_size,gapopen,gapextend,penalty,reward,
-                         max_target_seqs,xdrop_ungap,xdrop_gap,xdrop_gap_final,
-                         evalue,dust,blast_dir,account,memory,cpus,time,stdout_dir,stderr_dir,
-                         env_path,jobname="hashFrag",job_scheduler="slurm"):
-
-    job_script = []
-
-    """ Add job scheduler arguments
-    """
-    if job_scheduler == "slurm":
-        job_script.extend([
-            "#!/bin/bash",
-            f"#SBATCH --account={account}",
-            f"#SBATCH --job-name={jobname}",
-            f"#SBATCH --ntasks=1",
-            f"#SBATCH --mem={memory}",
-            f"#SBATCH --cpus-per-task={cpus}",
-            f"#SBATCH --time={time}",
-            f"#SBATCH --array=1-{n_queries}",
-            f"#SBATCH --output={os.path.join(stdout_dir,f'{jobname}.jobid_%A_%a.out')}",
-            f"#SBATCH --error={os.path.join(stderr_dir,f'{jobname}.jobid_%A_%a.err')}\n",
-            f"source {env_path}\n",
-            f"BLASTDB_PATH={blastdb_path}",
-            f"QUERIES_PATH={queries_path}",
-            f"BLAST_DIR={blast_dir}",
-            "QUERY_PATH=$( sed -n ${SLURM_ARRAY_TASK_ID}p $QUERIES_PATH )",
-            "LABEL=$( basename -s '.fa' $QUERY_PATH )",
-            "BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.out",
-            "PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv\n"
-        ])
-    else:
-        raise Exception(f"Unrecognized job_scheduler specified ({job_scheduler})!")
-
-    job_script.extend([
-        "echo 'BLAST DB: $BLASTDB_PATH'",
-        "echo 'Query FASTA file: $QUERY_PATH'",
-        "echo 'BLAST results written to: $BLASTN_PATH'",
-        "echo 'Processed BLAST results written to: $PROCESSED_BLASTN_PATH'",
-    ])
-
-    """ Call to BLASTn
-    """
-    command = construct_blastn_command(
-        query_path="$QUERY_PATH",
-        blastdb_path="$BLASTDB_PATH",
-        blastn_path="$BLASTN_PATH",
-        word_size=word_size,
-        gapopen=gapopen,
-        gapextend=gapextend,
-        penalty=penalty,
-        reward=reward,
-        max_target_seqs=max_target_seqs,
-        xdrop_ungap=xdrop_ungap,
-        xdrop_gap=xdrop_gap,
-        xdrop_gap_final=xdrop_gap_final,
-        evalue=evalue,
-        dust=dust,
-        threads=cpus
-    )
-    job_script.append(command)
-    job_script.append(f"echo 'BLASTn command: {command}'\n")
-
-
-    """
-    Filter to include minimal output consisting of query-subject sequence IDs, and 
-    the pairwise (corrected) alignment score that corresponds to the top BLAST alignment
-    between the two sequences.
-    """
-    command = construct_process_blast_results_command(
-        blastn_path="$BLASTN_PATH",
-        processed_blastn_path="$PROCESSED_BLASTN_PATH"
-    )
-    job_script.append(command)
-    job_script.append(f"echo 'Processing BLAST results module: {command}'")
-
-    script_path = os.path.join(out_dir,"hashFrag.blastn_array_module.array_jobs.sh")
-    with open(script_path,"w") as handle:
-        handle.write("\n".join(job_script)+"\n")
-
-    return script_path
-
 def blast_module_file_handler(args,logger):
+
+    output_dir = Path(args.output_dir).resolve()
 
     # Existing train AND test splits provided as FASTA files 
     if is_valid_fasta_file(args.train_fasta_path) and is_valid_fasta_file(args.test_fasta_path):
         logger.info("Train and test FASTA files detected. Computing pairwise BLAST comparisons across splits...")
 
+        train_fasta_path = Path(args.train_fasta_path).resolve()
+        test_fasta_path = Path(args.test_fasta_path).resolve()
+
         if args.train_fasta_path.endswith(".gz"):
-            logger.error(f"Error with the following input: {args.train_fasta_path}")
+            logger.error(f"Error with the following input: {train_fasta_path}")
             raise Exception(f"FASTA file must be uncompressed!")
 
         if args.test_fasta_path.endswith(".gz"):
-            logger.error(f"Error with the following input: {args.test_fasta_path}")
+            logger.error(f"Error with the following input: {test_fasta_path}")
             raise Exception(f"FASTA file must be uncompressed!")
     
         if args.blastdb_label is None:
-            ref_label    = extract_fasta_file_label(args.train_fasta_path)
-            query_label  = extract_fasta_file_label(args.test_fasta_path)
-            blastdb_path = os.path.join(args.output_dir,f"{ref_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{query_label}.blastn.out")
+            ref_label    = extract_fasta_file_label(train_fasta_path)
+            query_label  = extract_fasta_file_label(test_fasta_path)
+            blastdb_path = os.path.join(output_dir,f"{ref_label}.blastdb")
+            blastn_path  = os.path.join(output_dir,f"{query_label}.blastn.out")
         else:
             # Useful when running multiple BLASTs against the same data base
             ref_label    = args.blastdb_label
-            query_label  = extract_fasta_file_label(args.test_fasta_path)
-            blastdb_path = os.path.join(args.output_dir,f"{ref_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{query_label}.blastn.out")
+            query_label  = extract_fasta_file_label(test_fasta_path)
+            blastdb_path = os.path.join(output_dir,f"{ref_label}.blastdb")
+            blastn_path  = os.path.join(output_dir,f"{query_label}.blastn.out")
 
         if args.skip_revcomp:
-            ref_fasta_path = args.train_fasta_path # BLAST database
+            ref_fasta_path = train_fasta_path # BLAST database
         else:
-            ref_fasta_path = os.path.join(args.output_dir,f"{ref_label}.revcomps.fa")
+            ref_fasta_path = os.path.join(output_dir,f"{ref_label}.revcomps.fa")
             if not args.force and os.path.exists(ref_fasta_path):
                 logger.info("File with generated reverse complement ref sequences already exists (skipping)...")
             else:
                 logger.info("Generating reverse complement ref sequences...")
-                generate_reverse_complement_fasta(args.train_fasta_path,ref_fasta_path,logger)
+                generate_reverse_complement_fasta(train_fasta_path,ref_fasta_path,logger)
 
-        query_fasta_path = args.test_fasta_path # Query each of these sequences against the BLAST database
+        query_fasta_path = test_fasta_path # Query each of these sequences against the BLAST database
 
     # All sequences in dataset in a single file
     elif is_valid_fasta_file(args.fasta_path):
         logger.info("One FASTA files detected. Computing pairwise BLAST comparisons for all sequence-pairs...")
 
+        fasta_path = Path(args.fasta_path).resolve()
+
         if args.fasta_path.endswith(".gz"):
-            logger.error(f"Error with the following input: {args.fasta_path}")
+            logger.error(f"Error with the following input: {fasta_path}")
             raise Exception(f"FASTA file must be uncompressed!")
 
         if args.blastdb_label is None:
-            ref_label    = extract_fasta_file_label(args.fasta_path)
+            ref_label    = extract_fasta_file_label(fasta_path)
             query_label  = ref_label
-            blastdb_path = os.path.join(args.output_dir,f"{ref_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{query_label}.blastn.out")
+            blastdb_path = os.path.join(output_dir,f"{ref_label}.blastdb")
+            blastn_path  = os.path.join(output_dir,f"{query_label}.blastn.out")
         else:
             # Useful when running multiple BLASTs against the same data base
             ref_label    = args.blastdb_label
-            query_label  = extract_fasta_file_label(args.fasta_path)
-            blastdb_path = os.path.join(args.output_dir,f"{args.blastdb_label}.blastdb")
-            blastn_path  = os.path.join(args.output_dir,f"{args.blastdb_label}.blastn.out")
+            query_label  = extract_fasta_file_label(fasta_path)
+            blastdb_path = os.path.join(output_dir,f"{args.blastdb_label}.blastdb")
+            blastn_path  = os.path.join(output_dir,f"{args.blastdb_label}.blastn.out")
 
         if args.skip_revcomp:
-            ref_fasta_path = args.fasta_path # BLAST database
+            ref_fasta_path = fasta_path # BLAST database
             query_fasta_path = ref_fasta_path
         else:
-            ref_fasta_path = os.path.join(args.output_dir,f"{ref_label}.revcomps.fa")
+            ref_fasta_path = os.path.join(output_dir,f"{ref_label}.revcomps.fa")
             if os.path.exists(ref_fasta_path) and not args.force:
                 logger.info("File with generated reverse complement ref sequences already exists (skipping)...")
             else:
                 logger.info("Generating reverse complement ref sequences...")
-                generate_reverse_complement_fasta(args.fasta_path,ref_fasta_path,logger)
-            query_fasta_path = args.fasta_path
+                generate_reverse_complement_fasta(fasta_path,ref_fasta_path,logger)
+            query_fasta_path = fasta_path
 
     else:
  

@@ -22,9 +22,14 @@ def parse_arguments():
     parser.add_argument('-o','--outpath',type=str,required=True,help="")
     return parser.parse_args()
 
+def open_fasta_file(path):
+    if path.endswith(".gz"):
+        return gzip.open(path,"rt")
+    return open(path,"r")
+
 def load_fasta(path):
     fasta_dict = {}
-    with gzip.open(path,'rt') as handle:
+    with open_fasta_file(path) as handle:
         for record in SeqIO.parse(handle,'fasta'):
             fasta_dict[record.description] = str(record.seq)
     return fasta_dict
@@ -85,7 +90,7 @@ def compute_pairwise_SW_scores():
         if args.verbose:
             print("[MODE] Computing pairwise scores for the provided sequence file.",flush=True)
         def parse_fasta_to_generator(path):
-            with gzip.open(path, "rt") as handle:
+            with open_fasta_file(path) as handle:
                 for record in SeqIO.parse(handle, "fasta"):
                     yield record.description, str(record.seq)
 
@@ -102,7 +107,7 @@ def compute_pairwise_SW_scores():
         )
         results = p.map(compute_sw_score_partial,pairs)
 
-    with gzip.open(args.outpath,"wt") as handle:
+    with open(args.outpath,"w") as handle:
         for (id_i,id_j,sw) in results:
             handle.write(f"{id_i}\t{id_j}\t{sw}\n")
 

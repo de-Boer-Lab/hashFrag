@@ -41,7 +41,7 @@ def main():
     # blast_parser.set_defaults(func=importlib.import_module("blastn_module").run)
 
     # blastn_array_module
-    blast_array_parser = subparsers.add_parser("blastn_array_module",description=messages_dict["blastn_module"]["description"],help=messages_dict["blastn_module"]["help"])
+    blast_array_parser = subparsers.add_parser("blastn_array_module",description=messages_dict["blastn_array_module"]["description"],help=messages_dict["blastn_array_module"]["help"])
     blast_array_parser.add_argument('-f','--fasta-path',type=str,default=None,help=messages_dict["blastn_module"]["args"]["fasta_path"])
     blast_array_parser.add_argument('--train-fasta-path',type=str,default=None,help=messages_dict["blastn_module"]["args"]["train_fasta_path"])
     blast_array_parser.add_argument('--test-fasta-path',type=str,default=None,help=messages_dict["blastn_module"]["args"]["test_fasta_path"])
@@ -68,6 +68,8 @@ def main():
     blast_array_parser.add_argument('--environment-path',type=str,required=True,help=messages_dict["blastn_array_module"]["args"]["environment_path"])
     blast_array_parser.add_argument('--job-name',type=str,default="hashFrag",help=messages_dict["blastn_array_module"]["args"]["job_name"])
     blast_array_parser.add_argument('--job-scheduler',type=str,default="slurm",help=messages_dict["blastn_array_module"]["args"]["job_scheduler"])
+    blast_array_parser.add_argument('--debug',action='store_true',help=messages_dict["blastn_array_module"]["args"]["debug"])
+    blast_array_parser.add_argument('--compress',action='store_true',help=messages_dict["blastn_array_module"]["args"]["compress"])
     blast_array_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
     blast_array_parser.set_defaults(func=lambda args: importlib.import_module("modules.blastn_array_module").run(args))
 
@@ -100,7 +102,6 @@ def main():
     stratify_parser = subparsers.add_parser("stratify_test_split_module",description=messages_dict["stratify_test_split_module"]["description"],help=messages_dict["stratify_test_split_module"]["help"])
     stratify_parser.add_argument('-f','--test-fasta-path',type=str,required=True,help=messages_dict["stratify_test_split_module"]["args"]["test_fasta_path"])
     stratify_parser.add_argument('-i','--input-path',type=str,required=True,help=messages_dict["stratify_test_split_module"]["args"]["input_path"])
-    stratify_parser.add_argument('-m','--mode',type=str,required=True,help=messages_dict["stratify_test_split_module"]["args"]["mode"])
     stratify_parser.add_argument('-g','--gapopen',type=int,default=2,help=messages_dict["stratify_test_split_module"]["args"]["gapopen"])
     stratify_parser.add_argument('-x','--gapextend',type=int,default=1,help=messages_dict["stratify_test_split_module"]["args"]["gapextend"])
     stratify_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["stratify_test_split_module"]["args"]["penalty"])

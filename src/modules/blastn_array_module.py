@@ -10,11 +10,12 @@ def run(args):
     logger = logging.getLogger(__name__.replace("modules.",""))
     logger.info("Calling module...")
 
-    Path(args.output_dir).mkdir(parents=True,exist_ok=True)
-    partition_dir = os.path.join(args.output_dir,"query_fastas")
-    blast_dir     = os.path.join(args.output_dir,"blast_results")
-    stdout_dir    = os.path.join(args.output_dir,"job_stdout_files")
-    stderr_dir    = os.path.join(args.output_dir,"job_stderr_files")
+    output_dir = Path(args.output_dir).resolve()
+    Path(output_dir).mkdir(parents=True,exist_ok=True)
+    partition_dir = os.path.join(output_dir,"query_fastas")
+    blast_dir     = os.path.join(output_dir,"blast_results")
+    stdout_dir    = os.path.join(output_dir,"job_stdout_files")
+    stderr_dir    = os.path.join(output_dir,"job_stderr_files")
     Path(partition_dir).mkdir(exist_ok=True,parents=False)
     Path(blast_dir).mkdir(exist_ok=True,parents=False)
     Path(stdout_dir).mkdir(exist_ok=True,parents=False)
@@ -45,7 +46,7 @@ def run(args):
 
     logger.info("Partitioning query FASTA file...")
     query_fasta_paths = helper.partition_fasta_by_seq_count(query_fasta_path,query_label,partition_dir,args.query_partition_size)
-    queries_path = os.path.join(args.output_dir,"query_fasta_paths.txt")
+    queries_path = os.path.join(output_dir,"query_fasta_paths.txt")
     helper.write_filepaths_to_txt(query_fasta_paths,queries_path)
 
     """
@@ -87,17 +88,23 @@ def run(args):
         dust=args.dust,
         threads=args.num_cpus
     )
-    job_script.append(f"echo 'BLASTn command:\n{blastn_command}'\n")
-    job_script.append(blastn_command)
+    job_script.append(blastn_command+"\n")
 
     processing_command = helper.construct_process_blast_results_command(
         blastn_path="$BLASTN_PATH",
         processed_blastn_path="$PROCESSED_BLASTN_PATH"
     )
-    job_script.append(f"echo 'hashFrag process_blast_results_module command:\n{processing_command}\n'")
-    job_script.append(processing_command)
+    job_script.append(processing_command+"\n")
 
-    script_path = os.path.join(args.output_dir,"hashFrag.blastn_array_module.array_jobs.sh")
+    if not args.debug:
+        job_script.append("rm $BLASTN_PATH\n")
+
+    if args.compress:
+        job_script.append("gzip $PROCESSED_BLASTN_PATH\n")
+
+    job_script.append("Done!")
+
+    script_path = os.path.join(output_dir,"hashFrag.blastn_array_module.array_jobs.sh")
     with open(script_path,"w") as handle:
         handle.write("\n".join(job_script)+"\n")
 

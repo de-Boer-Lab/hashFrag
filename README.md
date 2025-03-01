@@ -244,21 +244,23 @@ For a full breakdown of available modules, please see the notebooks provided in 
 
 ## Generating array job scripts for large-scale hashFrag runs on an HPC
 
-For large-scale datasets, it is recommended to run hashFrag on an HPC cluster. The `blastn_array_module` can be used to generate an array job script that users can manually submit to carry out the BLAST similarity search process in partitions. Specifically, a BLAST database will be created over the complete input FASTA file and the query FASTA file will be partitioned into smaller chunks (based on the number of sequences), where each chunk is setup to be executed independently as part of an array job.
+For large-scale datasets, it is recommended to run hashFrag on an HPC cluster. The `blastn_array_module` can be used to generate an array job script that users can manually submit to carry out the BLAST similarity search process in partitions. Specifically, a BLAST database will be created over the complete input FASTA file, and the query FASTA file will be partitioned into smaller chunks based on the number of sequences, which can be set with the `--query-partition-size` argument. Each chunk of the query sequences is then setup to be executed independently as part of an array job.
 
 > hashFrag currently supports the setup of array job scripts for the following job schedulers: SLURM
 
-After querying a partitioned FASTA file to the database constructed over the complete FASTA input, BLAST results will automatically processed to select the top alignment for each query-subject sequence pair.
+Note that the `blastn_array_module` module expects the path to a shell script to carry out the setup of the HPC environment in each job (`--environment-path` argument). This script will be sourced at the start of each job. It should activate any virtual environments (if using), load relevant modules (e.g., `BLAST+`), and set the PATH variable.
 
-Note that this module also expects the path to a shell script to carry out the setup of the HPC environment in each job. This script will be sourced at the start of each job. It should activate any virtual environments, load any relevant modules (e.g., `BLAST+`), or set PATH variable.
+After querying a partitioned FASTA file to the BLAST database constructed over the complete FASTA input, BLAST results will automatically processed to select the top alignment for each query-subject sequence pair with the `process_blast_results_module`.
 
-### Example
+### Example: SLURM
 
 ```
 hashFrag blastn_array_module \
 --train-fasta-path example_train_split.fa \
 --test-fasta-path example_test_split.fa \
+--query-partition-size 1000 \
 --skip-revcomp \
+--job-scheduler "slurm" \
 --job-account "<account-name>" \
 --job-time "6:00:00" \
 --job-memory "16GB" \
@@ -283,10 +285,14 @@ This will create the following job script file: `./blastn_array_job.work/hashFra
 source /<path_to>/set_env.sh
 
 BLASTDB_PATH=blastn_array_job.work/example_train_split.blastdb
-QUERIES_PATH=blastn_array_job.work/query_fasta_paths.txt
 BLAST_DIR=blastn_array_job.work/blast_results
+
+# Each line is the path to the partitioned query FASTA file
+QUERIES_PATH=blastn_array_job.work/query_fasta_paths.txt
 QUERY_PATH=$( sed -n ${SLURM_ARRAY_TASK_ID}p $QUERIES_PATH )
 LABEL=$( basename -s '.fa' $QUERY_PATH )
+
+# Output files
 BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.out
 PROCESSED_BLASTN_PATH=$BLAST_DIR/${LABEL}.blastn.processed.tsv
 
@@ -295,6 +301,21 @@ blastn -query $QUERY_PATH -db $BLASTDB_PATH -out $BLASTN_PATH -word_size 11 -gap
 hashFrag process_blast_results_module --blastn-path $BLASTN_PATH --processed-blastn-path $PROCESSED_BLASTN_PATH
 ```
 Submit this with the following command: `sbatch ./blastn_array_job.work/hashFrag.blastn_array_module.array_jobs.sh`
+
+### Example: SGE
+
+```
+hashFrag blastn_array_module \
+--train-fasta-path example_train_split.fa \
+--test-fasta-path example_test_split.fa \
+--query-partition-size 1000 \
+--skip-revcomp \
+--job-scheduler "sge" \
+--job-memory "4G" \
+--num-cpus 4 \
+--environment-path "/<path_to>/set_env.sh" \
+-o blastn_array_job.work
+```
 
 # Paper
 

@@ -40,7 +40,9 @@
             "num_cpus":"Number of CPUs per task.",
             "environment_path":"Path to a shell script that sets up the environment to run hashFrag. This can involve activating a virtual environment, loading the relevant modules, or setting the PATH variable.",
             "job_name":"Name of HPC job.",
-            "job_scheduler":"The job scheduler to setup the array job for (Permissible values: {'slurm'}; Default: 'slurm')."
+            "job_scheduler":"The job scheduler to setup the array job for (Permissible values: {'slurm'}; Default: 'slurm').",
+            "debug":"If specified, do not raw BLAST results file. (Default: False, delete raw blastn output file).",
+            "compress":"Compress output if specified (Default: False, do not compress the processed blastn results file)."
         }
     },
     "filter_candidates_module":{
@@ -48,7 +50,6 @@
         "description":"Filter candidate pairs based on a specified alignment score threshold. False-positive removal step. If called with 'lightning' mode, a corrected BLAST alignment score will be calculated for each candidate pair -- filtering will be with respect to this corrected score.",
         "args":{
             "input_path":"Either the BLAST results file (tabular format) or manually computed alignment scores in tab-delimited format.",
-            "mode":"The alignment scoring system upon which the filtering is based. (Permissible values: {'lightning','pure'}; Default: 'lightning').",
             "gapopen":"Penalty (positive value) for opening gap in the alignment (Default: 2).",
             "gapextend":"Penalty (positive value) for extending an existing gap in the alignment (Default: 1).",
             "penalty":"Nucleotide mismatch in penalty (negative value) the alignment (Default: -1).",
@@ -72,7 +73,6 @@
         "args":{
             "test_fasta_path":"Input FASTA file for the testing sequences  (supports unzipped or gzipped file formats).",
             "input_path":"Either the BLAST results file (tabular format) or manually computed alignment scores in tab-delimited format.",
-            "mode":"The alignment scoring system upon which the filtering is based. (Permissible values: {'lightning','pure'}; Default: 'lightning').",
             "gapopen":"Penalty (positive value) for opening gap in the alignment (Default: 2).",
             "gapextend":"Penalty (positive value) for extending an existing gap in the alignment (Default: 1).",
             "penalty":"Nucleotide mismatch in penalty (negative value) the alignment (Default: -1).",
