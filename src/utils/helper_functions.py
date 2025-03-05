@@ -133,7 +133,7 @@ def partition_fasta_by_seq_count(fasta_path,label,partition_dir,partition_size):
             p += 1
 
     if records:
-        path = os.path.join(partition_dir,f"{label}.part_{p}.fa")
+        path = os.path.join(partition_dir,f"{label}.part_{p:0>8}.fa")
         SeqIO.write(records,path,"fasta")
         pathlist.append(path)
 
@@ -221,7 +221,7 @@ def instantiate_job_script(queries_path,n_queries,blastdb_path,blast_dir,
             'echo "BLAST database path: $BLASTDB_PATH"',
             'echo "Query path: $QUERY_PATH"',
             'echo "BLAST results path: $BLASTN_PATH"',
-            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH\n"\n'
+            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH"\n'
         ]
     elif job_scheduler == "sge":
         job_script = [
@@ -244,7 +244,7 @@ def instantiate_job_script(queries_path,n_queries,blastdb_path,blast_dir,
             'echo "BLAST database path: $BLASTDB_PATH"',
             'echo "Query path: $QUERY_PATH"',
             'echo "BLAST results path: $BLASTN_PATH"',
-            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH"\n'
+            'echo "Processed BLAST results path: $PROCESSED_BLASTN_PATH"\n',
         ]
     else:
         raise Exception(f"Unrecognized `job_scheduler` specified ({job_scheduler} is invalid or currently not supported)!")
