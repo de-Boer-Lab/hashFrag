@@ -102,7 +102,7 @@ def run(args):
     if args.compress:
         job_script.append("gzip $PROCESSED_BLASTN_PATH\n")
 
-    job_script.append("Done!")
+    job_script.append("echo 'Done!'")
 
     script_path = os.path.join(output_dir,"hashFrag.blastn_array_module.array_jobs.sh")
     with open(script_path,"w") as handle:
