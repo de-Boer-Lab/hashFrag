@@ -181,6 +181,7 @@ def construct_blastn_command(query_path,blastdb_path,blastn_path,
         f"-evalue {evalue}",
         f"-dust {dust}",
         f"-num_threads {threads}",
+        "-max_hsps 1",
         "-outfmt '6 std score positive gaps'",
         "-strand plus"
     ])
