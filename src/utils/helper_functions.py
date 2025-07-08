@@ -91,6 +91,14 @@ def write_splits_to_tsv(train_split,test_split,path):
             handle.write(f"{sample_id}\ttest\n")
     return
 
+def write_folds_to_tsv(folds,path):
+    with open(path,"w") as handle:
+        handle.write("id\tfold\n")
+        for f,fold in enumerate(folds):
+            for sample_id in fold:
+                handle.write(f"{sample_id}\t{f}\n")
+    return
+
 
 def validate_subprocess_execution(process,command,logger):
     if process.returncode != 0:

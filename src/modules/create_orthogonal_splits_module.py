@@ -22,51 +22,38 @@ def run(args):
     hit_idset will be used to efficiently identify sequences are orthogonal or share
     homology with another sequence in the population.
     """
-    hit_idset = set()
+    N = 0
     homologous_groups = defaultdict(set)
     with open(args.homology_path,"r") as handle:
         for line in handle:
+            N += 1
             sample_id,group_id = line.strip().split("\t")
-            hit_idset.add(sample_id)
             homologous_groups[group_id].add(sample_id)
     homologous_groups = list(homologous_groups.values())
 
-    ids = helper.load_fasta_ids(args.fasta_path)
-    n = len(ids)
+    n_train = int(round(N*args.p_train,0))
+    n_test  = int(round(N*args.p_test,0))
 
-    n_train = int(round(n*args.p_train,0))
-    n_test  = int(round(n*args.p_test,0))
-
-    if n_train+n_test != n:
-        raise Exception(f"Combined train ({n_train}) and test ({n_test}) size doesn't add up to expected total ({n}).")
+    if n_train+n_test != N:
+        raise Exception(f"Combined train ({n_train}) and test ({n_test}) size doesn't add up to expected total ({N}).")
 
     logger.info(f"Creating {args.n_splits} orthogonal splits in directory: {args.output_dir}")
     for i in range(args.n_splits):
         split = f"split_{i+1:0>3}"
 
-        ids_ = ids.copy()
+        groups_ = homologous_groups.copy()
+        test_split = set()
+        while len(test_split) < n_test:
+            idx = random.randint(0,len(groups_)-1)
+            group_ = groups_.pop(idx)
+            test_split.update(group_)
 
         train_split = set()
-        while len(train_split) < n_train:
-            sample_id = random.choice(ids_)
-            complementary_sample_id = helper.get_complementary_id(sample_id)
-
-            train_split.update([sample_id,complementary_sample_id])
-            ids_.remove(sample_id)
-            ids_.remove(complementary_sample_id)
-
-            """
-            If the sequence shares homology with any other sequences, add the
-            homologous sequences into the train split as well.
-            """
-            if sample_id in hit_idset:
-                for homologous_group in homologous_groups:
-                    if sample_id in homologous_group:
-                        ids_ = [id_ for id_ in ids_ if id_ not in homologous_group]
-                        train_split.update(homologous_group)
-
+        for group_ in groups_:
+            train_split.update(group_)
+        
+        test_split = sorted(test_split)
         train_split = sorted(train_split)
-        test_split  = sorted(ids_) # remaining sequences are sent train split
 
         filename = f"hashFrag.train_{len(train_split)}.test_{len(test_split)}.{split}.tsv"
         outpath  = os.path.join(args.output_dir,filename)
