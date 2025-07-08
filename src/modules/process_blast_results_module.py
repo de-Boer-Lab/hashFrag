@@ -10,8 +10,6 @@ blast_columns = [
     "bitscore","uncorrected_blast_score","positive","gaps"
 ]
 
-score_columns = ["id_i","id_j","score"]
-
 def run(args):
 
     logger = logging.getLogger(__name__.replace("modules.",""))

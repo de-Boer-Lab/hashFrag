@@ -1,7 +1,5 @@
 import sys
-import igraph as ig
 import pandas as pd
-from scipy.sparse import coo_matrix
 from collections import defaultdict
 import utils.helper_functions as helper
 import logging
@@ -23,71 +21,65 @@ def get_symmetric_adjacency_dict(adjacency_dict):
             symmetric_adjacency_dict[complementary_query_id].update(subject_set)
     return symmetric_adjacency_dict
 
-def determine_homologous_communities(adjacency_dict):
-    """
-    From the adjacency dictionary representation of shared pairwise homology
-    between sequences, we can first convert it into a sparse matrix (scipy dependency). 
-    Next we construct a graph over the sparse matrix (igraph dependency), and then
-    homologous groups can be simply identified by collecting the connected components
-    in the graph.
-    """
+class UnionFind:
+    def __init__(self):
+        self.parent = {}
 
-    candidate_idset = set()
-    for candidates in adjacency_dict.values():
-        candidate_idset.update(candidates)
-    candidate_ids = list(candidate_idset)
+    def find(self,x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
 
-    n = len(candidate_ids)
-    id_map = {seq_id:i for i,seq_id in enumerate(candidate_ids)}
+    def union(self,x,y):
+        root_x = self.find(x)
+        root_y = self.find(y)
+        if root_x != root_y:
+            self.parent[root_x] = root_y
 
-    row,col = [],[]
-    for query_id,candidates in adjacency_dict.items():
-        i = id_map[query_id]
-        for subject_id in candidates:
-            j = id_map[subject_id]
-            row.append(i)
-            col.append(j)
-    weights = [1]*len(row)
-    sparse_mat = coo_matrix((weights,(row,col)),shape=(n,n)).tocsr()
+def get_disjoint_sets(setlist):
+    uf = UnionFind()
+    for s in setlist:
+        for x in s:
+            if x not in uf.parent:
+                uf.parent[x] = x
 
-    g = ig.Graph.Weighted_Adjacency( # only Weighted_Adjancency seems to support sparse inputs
-        matrix=sparse_mat,
-        mode="undirected",
-        loops=False,
-        attr="candidates"
-    )
+    for reverse_id in [x for x in uf.parent if x.endswith("_Reversed")]:
+        forward_id = reverse_id.replace("_Reversed","")
+        if forward_id in uf.parent:
+            uf.union(reverse_id,forward_id)
 
-    communities = g.connected_components(mode='weak')
-    homologous_groups = []
-    for community in communities:
-        homologous_groups.append({ candidate_ids[i] for i in community })
-    
-    return homologous_groups
+    for s in setlist:
+        s_list = list(s)
+        for i in range(1,len(s_list)):
+            uf.union(s_list[0],s_list[i])
+
+    groups = defaultdict(set)
+    for x in uf.parent:
+        groups[uf.find(x)].add(x)
+
+    return list(groups.values())
 
 def run(args):
 
     logger = logging.getLogger(__name__.replace("modules.",""))
     logger.info("Calling module...")
     
-    hits_dict = defaultdict(set)
-    for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000):
-        for qseqid, sseqid in zip(chunk_df["id_i"],chunk_df["id_j"]):
-            hits_dict[qseqid].add(sseqid)
-            hits_dict[sseqid].add(qseqid)
+    """
+    This is a list of pairs or singletons expected from the process_blast_results_module.
+    The pairset of sequence IDs (i.e., {<id_i>,<id_j>}) is returned if their corrected BLAST
+    score >= the specified homology threshold; otherwise, each sequence ID is appended as a
+    singleton set (e.g., {<id_i>}, {id_j})
+    """
+    hitset_list = []
+    for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000,header=None,names=["qseqid","sseqid","score"]):
+        for qseqid,sseqid,score in zip(chunk_df["qseqid"],chunk_df["sseqid"],chunk_df["score"]):
+            if score >= args.threshold:
+                hitset_list.append({qseqid,sseqid})
+            else:
+                hitset_list.append({qseqid})
+                hitset_list.append({sseqid})
 
-    symmetric_hits_dict = get_symmetric_adjacency_dict(hits_dict)
-    symmetric_hits_dict = {
-        query_id:candidates
-        for query_id,candidates in symmetric_hits_dict.items() 
-        if candidates != {query_id,helper.get_complementary_id(query_id)}
-    }
-    if len(symmetric_hits_dict) == 0:
-        logger.info("No homology detected!\n\tExiting.")
-        sys.exit(0)
-    else:
-        logger.info(f"{len(symmetric_hits_dict)} sequences exhibiting homology.")
-
-    homologous_groups = determine_homologous_communities(symmetric_hits_dict)
+    homologous_groups = get_disjoint_sets(hitset_list)
     logger.info(f"{len(homologous_groups)} distinct groups.")
 
     with open(args.output_path,"w") as handle:

@@ -113,6 +113,7 @@ def main():
     # identify_homologous_groups_module
     homology_parser = subparsers.add_parser("identify_homologous_groups_module",description=messages_dict["identify_homologous_groups_module"]["description"],help=messages_dict["identify_homologous_groups_module"]["help"])
     homology_parser.add_argument('-i','--hits-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["hits_path"])
+    homology_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["hits_path"])
     homology_parser.add_argument('-o','--output-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["output_path"])
     homology_parser.set_defaults(func=lambda args: importlib.import_module("modules.identify_homologous_groups_module").run(args))
 
