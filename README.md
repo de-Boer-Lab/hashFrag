@@ -181,7 +181,7 @@ hashFrag create_orthogonal_splits \
 --skip-revcomp \
 -o create_orthogonal_splits.work
 ```
-The creation of orthogonal train-test splits involves encoding the homologous relationships between sequences as a sparse adjacency matrix (unweighted in accordance with the alignment score threshold). A graph representation of the adjancency matrix is constructed, and then distinct groups of homologous sequences can be identified by finding disconnected subgraphs. From the homology cluster information, splits with no leakage can be created proportionally. 
+The creation of orthogonal train-test splits involves determining disjoint sets of sequences with respect to homology. This is accomplished using the [union-find](https://en.wikipedia.org/wiki/Disjoint-set_data_structure) data structure (also referred to as disjoint-set or merge-find set). From the homology cluster information, splits with no leakage can be created proportionally. 
 
 <details>
 <summary>Expand to view the full table of arguments</summary>
