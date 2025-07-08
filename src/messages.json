@@ -91,13 +91,22 @@
     },
     "create_orthogonal_splits_module":{
         "help":"Create homology-aware test-train splits.",
-        "description":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits. This is accomplished via a graph-based method where nodes are sequences and edges denote a pair of sequences exhibiting homology. From there, the task involves identifying all homologous groups is equivalent to finding disconnected subgraphs in the population.",
+        "description":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware test-train splits. Homologous groups are defined as disjoint sets over the population of sequences.",
         "args":{
-            "fasta_path":"Input FASTA file containing all sequences in the dataset (supports unzipped or gzipped file formats).",
             "homology_path":"The tab-delimited file containing the homologous group labels that the relevant sequences in the test split belong to (output file of 'identify_homologous_groups').",
             "p_train":"The proportion of sequences to send to the train data split (Default: 0.8).",
             "p_test":"The proportion of sequences to send to the test data split (Default: 0.2).",
             "n_splits":"Number of split replicates to create (Default: 1).",
+            "seed":"Random seed to use for the creation of homology-aware data splits (Default 21).",
+            "output_dir":"The directory to write the created train-test splits."
+        }
+    },
+    "create_orthogonal_folds_module":{
+        "help":"Create an arbitrary number of homology-aware folds.",
+        "description":"Given the clustering of sequences based on homology ('identify_homologous_groups'), create homology-aware folds. Homologous groups are defined as disjoint sets over the population of sequences.",
+        "args":{
+            "homology_path":"The tab-delimited file containing the homologous group labels that the relevant sequences in the test split belong to (output file of 'identify_homologous_groups').",
+            "folds":"Number of folds to create.",
             "seed":"Random seed to use for the creation of homology-aware data splits (Default 21).",
             "output_dir":"The directory to write the created train-test splits."
         }

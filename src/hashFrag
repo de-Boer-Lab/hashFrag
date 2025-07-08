@@ -87,7 +87,7 @@ def main():
     # filter_candidates_module
     fp_parser = subparsers.add_parser("filter_candidates_module",description=messages_dict["filter_candidates_module"]["description"],help=messages_dict["filter_candidates_module"]["help"])
     fp_parser.add_argument('-i','--input-path',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["input_path"])
-    fp_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
+    fp_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     fp_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["output_dir"])
     fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_candidates_module").run(args))
 
@@ -113,7 +113,7 @@ def main():
     # identify_homologous_groups_module
     homology_parser = subparsers.add_parser("identify_homologous_groups_module",description=messages_dict["identify_homologous_groups_module"]["description"],help=messages_dict["identify_homologous_groups_module"]["help"])
     homology_parser.add_argument('-i','--hits-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["hits_path"])
-    homology_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["hits_path"])
+    homology_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     homology_parser.add_argument('-o','--output-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["output_path"])
     homology_parser.set_defaults(func=lambda args: importlib.import_module("modules.identify_homologous_groups_module").run(args))
 
@@ -128,12 +128,12 @@ def main():
     orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits_module").run(args))
 
     # create_orthogonal_folds_module
-    orthosplit_parser = subparsers.add_parser("create_orthogonal_folds_module",description=messages_dict["create_orthogonal_splits_module"]["description"],help=messages_dict["create_orthogonal_splits_module"]["help"])
-    orthosplit_parser.add_argument('-i','--homology-path',type=str,required=True,help=messages_dict["create_orthogonal_splits_module"]["args"]["homology_path"])
-    orthosplit_parser.add_argument('-f','--folds',type=int,default=1,help=messages_dict["create_orthogonal_splits_module"]["args"]["n_splits"])
-    orthosplit_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_splits_module"]["args"]["seed"])
-    orthosplit_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["create_orthogonal_splits_module"]["args"]["output_dir"])
-    orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits_module").run(args))
+    orthofold_parser = subparsers.add_parser("create_orthogonal_folds_module",description=messages_dict["create_orthogonal_folds_module"]["description"],help=messages_dict["create_orthogonal_splits_module"]["help"])
+    orthofold_parser.add_argument('-i','--homology-path',type=str,required=True,help=messages_dict["create_orthogonal_folds_module"]["args"]["homology_path"])
+    orthofold_parser.add_argument('-f','--folds',type=int,default=5,help=messages_dict["create_orthogonal_folds_module"]["args"]["n_splits"])
+    orthofold_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_folds_module"]["args"]["seed"])
+    orthofold_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["create_orthogonal_folds_module"]["args"]["output_dir"])
+    orthofold_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_folds_module").run(args))
 
     # filter_existing_splits
     filter_pipeline_parser = subparsers.add_parser("filter_existing_splits",description=messages_dict["filter_existing_splits"]["description"],help=messages_dict["filter_existing_splits"]["help"])

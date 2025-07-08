@@ -30,7 +30,7 @@ def run(args):
         logger.warning(f"No sequence pairs with an alignment score above the specified threshold: {args.threshold}")
 
     filtered_path = os.path.join(args.output_dir,f"hashFrag.similar_pairs.tsv")
-    filtered_df.to_csv(filtered_path,sep="\t",index=False)
+    filtered_df.to_csv(filtered_path,sep="\t",index=False,header=False)
 
     logger.info(f"Filtered results written to: {filtered_path}")
     logger.info(f"Module execution completed.\n")

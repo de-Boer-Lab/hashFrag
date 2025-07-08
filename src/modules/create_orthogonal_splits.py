@@ -54,16 +54,17 @@ def run(args):
     )
     hashFrag_process_blast_results(process_blast_results_args)
 
-    filter_candidates_args = argparse.Namespace(
-        input_path=processed_blast_path,
-        threshold=args.threshold,
-        output_dir=args.output_dir
-    )
-    hashFrag_filter_candidates(filter_candidates_args)
-    hits_path = os.path.join(args.output_dir,f"hashFrag.similar_pairs.tsv")
+    # filter_candidates_args = argparse.Namespace(
+    #     input_path=processed_blast_path,
+    #     threshold=args.threshold,
+    #     output_dir=args.output_dir
+    # )
+    # hashFrag_filter_candidates(filter_candidates_args)
+    # hits_path = os.path.join(args.output_dir,f"hashFrag.similar_pairs.tsv")
     homology_path = os.path.join(args.output_dir,f"hashFrag.homologous_groups.tsv")
     identify_groups_args = argparse.Namespace(
-        hits_path=hits_path,
+        hits_path=processed_blast_path,
+        threshold=args.threshold,
         output_path=homology_path
     )
     hashFrag_identify_groups(identify_groups_args)
