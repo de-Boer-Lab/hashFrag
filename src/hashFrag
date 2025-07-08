@@ -130,7 +130,7 @@ def main():
     # create_orthogonal_folds_module
     orthofold_parser = subparsers.add_parser("create_orthogonal_folds_module",description=messages_dict["create_orthogonal_folds_module"]["description"],help=messages_dict["create_orthogonal_splits_module"]["help"])
     orthofold_parser.add_argument('-i','--homology-path',type=str,required=True,help=messages_dict["create_orthogonal_folds_module"]["args"]["homology_path"])
-    orthofold_parser.add_argument('-f','--folds',type=int,default=5,help=messages_dict["create_orthogonal_folds_module"]["args"]["n_splits"])
+    orthofold_parser.add_argument('-f','--folds',type=int,default=5,help=messages_dict["create_orthogonal_folds_module"]["args"]["folds"])
     orthofold_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_folds_module"]["args"]["seed"])
     orthofold_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["create_orthogonal_folds_module"]["args"]["output_dir"])
     orthofold_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_folds_module").run(args))
