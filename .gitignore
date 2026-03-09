@@ -17,3 +17,6 @@ __pycache__/
 *.pyo
 *.pyd
 *.pyc
+
+# readthedocs
+docs/build/
