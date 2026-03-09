@@ -242,6 +242,20 @@ seq_E	seq_A	100
 
 For a full breakdown of available modules, please see the notebooks provided in the `/tutorial` directory.
 
+## Creating orthogonal data folds
+
+Users can also generate an arbitrary number of homology-aware data folds with the following module:
+
+```
+hashFrag create_orthogonal_folds_module -i $HOMOLOGY_PATH -f 10 -o $OUTPUT_DIR
+```
+
+where `-i` points to the file path containing the identified homologous groups (output of the `identify_homologous_groups_module`); `-f` corresponds to the number of folds to create; and `-o` defines the output directory to write the created folds.
+
+This module implements a heuristic approach that aims to create folds of roughly equal size based on the defined groups. In particular, homologous groups are sorted according to the number of sequences before being greedily added to the smallest fold, where fold sizes are updated following the assignment of each homologous group. 
+
+Note that performance will be unstable (i.e., variable fold sizes) if there are homologous groups substantially larger than the target fold size, which is determined by dividing the total number of sequences by the requested number of folds.
+
 ## Generating array job scripts for large-scale hashFrag runs on an HPC
 
 For large-scale datasets, it is recommended to run hashFrag on an HPC cluster. The `blastn_array_module` can be used to generate an array job script that users can manually submit to carry out the BLAST similarity search process in partitions. Specifically, a BLAST database will be created over the complete input FASTA file, and the query FASTA file will be partitioned into smaller chunks based on the number of sequences, which can be set with the `--query-partition-size` argument. Each chunk of the query sequences is then setup to be executed independently as part of an array job.
