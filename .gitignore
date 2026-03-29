@@ -23,6 +23,7 @@ _build
 _static
 _templates
 tutorial/
+*.ipynb
 
 # Python compiled files and directories
 .ipynb_checkpoints/

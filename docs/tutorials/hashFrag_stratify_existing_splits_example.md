@@ -32,7 +32,7 @@ Successful identification of cases of homology is paramount to effectively mitig
 * `evalue`: the e-value statistic is a measure of how likely you observe the alignment by chance (lower value corresponds to less likely to observe). By increasing the e-value threshold, less stringent matches that could be due to chance are returned.
 * `dust`: by setting dust off, low-complexity (e.g., repetitive sequences) are no longer masked/filtered out.
 
-# Section 1 - Identifying candidate similar sequences
+## Section 1 - Identifying candidate similar sequences
 
 When user-derived train-test splits are provided, comparisons are constrained to pairs of sequences across splits. The process of identifying candidate pairs of similar sequences involves first creating a BLAST database of sequences in the train split, and then querying each test split sequence against the database. The BLASTn algorithm returns pairwise matches that represent potential cases of homology. 
 
@@ -70,7 +70,7 @@ Output:
     2025-03-02 08:32:31 - blastn_module - INFO - BLASTn process finished and written to: /home/brett/hashFrag/data/tutorial.stratify_test_split.work/example_test_split.blastn.out
     2025-03-02 08:32:31 - blastn_module - INFO - Module execution completed.
     
-## Section 1.1 - Processing raw `blastn` output file
+### Section 1.1 - Processing raw `blastn` output file
 
 This processing step extracts the top-scoring alignment for each unique query-subject sequence pair and corrects the heuristic alignment score for subsequent steps. The processed tab-delimited file contains 3 columns (query sequence ID, subject sequence ID and their corrected heuristic alignment score).
 
@@ -89,9 +89,9 @@ Output:
     2025-03-02 08:33:13 - process_blast_results_module - INFO - Processed BLASTn results written to: ../data/tutorial.stratify_test_split.work/example_test_split.blastn.processed.tsv
     2025-03-02 08:33:13 - process_blast_results_module - INFO - Module execution completed.
 
-# Section 2: Use Case(s)
+## Section 2: Use Case(s)
 
-## Stratify test split based on homology
+### Stratify test split based on homology
 
 Another potentially useful feature is to stratify the test split based on each test sequence's maximum alignment score compared to all sequences in the train split. This can aid in studying the effects that homology has on model performance evaluation. The range of values is specified by the `step` parameter.
 
@@ -191,7 +191,7 @@ Output:
     2025-03-02 08:40:46 - stratify_test_split_module - INFO - Stratification results written to: ../data/tutorial.stratify_test_split.work/hashFrag_pure.stratified_test.tsv
     2025-03-02 08:40:46 - stratify_test_split_module - INFO - Module execution completed.
 
-# Further details
+## Further details
 
 Run the following command in terminal (e.g., Bash script):
 ```bash

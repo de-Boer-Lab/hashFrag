@@ -34,7 +34,7 @@ Successful identification of cases of homology is paramount to effectively mitig
 
 An alignment score threshold of 60 was determined to be appropriate for a sequence length of 200bp based on analyses assessing alignment scores between dinucleotide shuffled (i.e., random) and genomic nucleotide sequences.
 
-# Section 1 - Identifying candidate similar sequences
+## Section 1 - Identifying candidate similar sequences
 
 When user-derived train-test splits are provided, comparisons are constrained to pairs of sequences across splits. The process of identifying candidate pairs of similar sequences involves first creating a BLAST database of sequences in the train split, and then querying each test split sequence against the database. The BLASTn algorithm returns pairwise matches that represent potential cases of homology. 
 
@@ -72,7 +72,7 @@ Output:
     2025-03-02 08:44:46 - blastn_module - INFO - BLASTn process finished and written to: /home/brett/hashFrag/data/tutorial.filter_existing_splits.work/example_test_split.blastn.out
     2025-03-02 08:44:46 - blastn_module - INFO - Module execution completed.
     
-## Section 1.1 - Processing the raw `blastn` output file
+### Section 1.1 - Processing the raw `blastn` output file
 
 This processing step extracts the top-scoring alignment for each unique query-subject sequence pair and corrects the heuristic alignment score for subsequent steps. The processed tab-delimited file contains 3 columns (query sequence ID, subject sequence ID and their corrected heuristic alignment score).
 
@@ -93,7 +93,7 @@ Output:
     
 
 
-# Section 2: Filter false-positives based on a defined threshold
+## Section 2: Filter false-positives based on a defined threshold
 
 The next step involves filtering candidate pairings with alignment scores lower than the specified threshold. There are two different modes of hashFrag depending on what alignment score is selected.
 
@@ -109,7 +109,7 @@ hashFrag filter_candidates_module -i $INPUT_PATH -t 60 -o $WORK_DIR
 
 2. `hashFrag-pure` is the slower but more comprehensive method that is based on the optimal, Smith-Waterman local alignment scores between pairs of sequences. The calculation of optimal alignment scores incurs an additional cost to filtering.
 
-## Section 2.1: hashFrag-pure mode
+### Section 2.1: hashFrag-pure mode
 
 To limit memory usage, we'll start by partitioning the blast output file based on size. 
 
@@ -196,9 +196,9 @@ Output:
     2025-03-02 08:46:41 - filter_candidates_module - INFO - Filtered results written to: ../data/tutorial.filter_existing_splits.work/hashFrag.similar_pairs.tsv
     2025-03-02 08:46:41 - filter_candidates_module - INFO - Module execution completed.
 
-# Section 3: Use Case(s)
+## Section 3: Use Case(s)
 
-## Filter test split sequences that exhibit homology with any sequences in the train split
+### Filter test split sequences that exhibit homology with any sequences in the train split
 
 Run the following command in terminal (e.g., Bash script):
 ```bash
@@ -220,7 +220,7 @@ Output:
     2025-03-02 08:46:42 - filter_test_split_module - INFO - Module execution completed.
     
 
-# Further details
+## Further details
 
 Call the `help` command to list out all parameters.
 

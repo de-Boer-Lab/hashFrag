@@ -31,7 +31,7 @@ Successful identification of cases of homology is paramount to effectively mitig
 
 An alignment score threshold of 60 was determined to be appropriate based on an analysis looking at alignment scores between dinucleotide shuffled (i.e., random) sequences.
 
-# Section 1 - Identifying candidate similar sequences
+## Section 1 - Identifying candidate similar sequences
 
 The process of identifying candidate pairs of similar sequences involves first creating a BLAST database of the dataset, and then querying each sequence against the database. The BLASTn algorithm returns pairwise matches that represent potential cases of homology. 
 
@@ -68,7 +68,7 @@ Output:
     2025-07-08 14:28:27 - blastn_module - INFO - Module execution completed.
     
 
-## Section 1.1 - Processing raw `blastn` output file
+### Section 1.1 - Processing raw `blastn` output file
 
 This processing step extracts the top-scoring alignment for each unique query-subject sequence pair and corrects the heuristic alignment score for subsequent steps. The processed tab-delimited file contains 3 columns (query sequence ID, subject sequence ID and their corrected heuristic alignment score).
 
@@ -89,7 +89,7 @@ Output:
     
 
 
-# Section 2: Filter false-positives based on a defined threshold
+## Section 2: Filter false-positives based on a defined threshold
 
 The next step involves filtering candidate pairings with alignment scores lower than the specified threshold. There are two different modes of hashFrag depending on what alignment score is selected.
 
@@ -105,7 +105,7 @@ hashFrag filter_candidates_module -i $INPUT_PATH -t 60 -o $WORK_DIR
 2. `hashFrag-pure` is the slower but more comprehensive method that is based on the optimal, Smith-Waterman local alignment scores between pairs of sequences. The calculation of optimal alignment scores incurs an additional cost to filtering.
 
 
-## Section 2.1: hashFrag-pure mode
+### Section 2.1: hashFrag-pure mode
 
 To limit memory usage, we'll start by partitioning the blast output file based on size. 
 
@@ -186,7 +186,7 @@ Output:
     BCL11A_1532_Reversed	HBA2_4771_Reversed	14.0
     BCL11A_1532_Reversed	peak13703	15.0
 
-# Section 3: Determine groups of homology
+## Section 3: Determine groups of homology
 
 There are often distinct groups of sequences exhibiting different cases of homology throughout the dataset. To determine such groups, we represent the "hits" (i.e., pairs of sequences with an alignment score greater than the threshold) as a sparse adjacency matrix. A graph can then be constructed, where nodes correspond to sequences and edges denote shared homology between the two sequences. The process of identifying groups of homology can readily be solved by identifying disconnected subgraphs. 
 
@@ -206,11 +206,11 @@ Output:
     
 
 
-# Section 4: Use case(s)
+## Section 4: Use case(s)
 
 Upon identifying groups of sequences exhibiting high similarity (i.e., homology), we can create train-test data splits using a graph-based method. Specifically, by representing sequences as nodes and using edges to denote whether sequences were found to be homologous (yes or no), identifying homologous groups of sequences can be reduced to the task of identifying all disconnected subgraphs in the population. 
 
-## Creating homology-aware data splits
+### Creating homology-aware data splits
 
 Below we show how splits can be created based on the homologous groups identified from either the `hashFrag-lightning` or `hashFrag-pure` methods.
 
@@ -228,7 +228,7 @@ Output:
     2025-07-08 14:49:27 - create_orthogonal_splits_module - INFO - Module execution completed.
     
 
-# Creating homology-aware data folds
+## Creating homology-aware data folds
 
 Run the following command in terminal (e.g., Bash script):
 ```bash
@@ -274,7 +274,7 @@ Output:
     2025-07-08 14:53:48 - create_orthogonal_folds_module - INFO - Orthogonal folds written to ../data/tutorial.create_orthogonal_splits.work/hashFrag.10_orthogonal_folds.tsv
     2025-07-08 14:53:48 - create_orthogonal_folds_module - INFO - Module execution completed.
 
-# Further details
+## Further details
 
 Call the `help` command to list out all parameters.
 
