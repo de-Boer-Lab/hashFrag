@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hashFrag"
-version = "1.0.1"
+version = "1.0.2"
 license = {text = "MIT"}
 authors = [
   { name="Brett Kiyota", email="brett.kiyota@ubc.ca" },
@@ -36,3 +36,7 @@ hashFrag = "hashFrag.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.urls]
+Github = "https://github.com/de-Boer-Lab/hashFrag"
+Documentation = "https://hashfrag.readthedocs.io"
