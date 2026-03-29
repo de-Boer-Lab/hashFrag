@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 import logging
 
 score_columns = ["id_i","id_j","score"]

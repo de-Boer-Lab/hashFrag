@@ -1,11 +1,10 @@
-<img src="./imgs/hashFrag_logo.png" width=800>
-
+<img src="https://raw.githubusercontent.com/de-Boer-Lab/hashFrag/main/imgs/hashFrag_logo.png" width=800>
 
 # Overview
 
 Neural networks have emerged as powerful tools to understand the functional relationship between genomic sequences and various biological processes. However, current practices of training and evaluating models on genomic sequences may fail to account for the widespread homology that permeates the genome. Homology spanning train-test data splits can result in [data leakage](https://en.wikipedia.org/wiki/Leakage_(machine_learning)#:~:text=In%20statistics%20and%20machine%20learning,when%20run%20in%20a%20production), potentially leading to overestimation of model performance and a reduction in model reliability and generalizability.
 
-<img src="./imgs/hashFrag_workflow_diagram.png">
+<img src="https://raw.githubusercontent.com/de-Boer-Lab/hashFrag/main/imgs/hashFrag_workflow_diagram.png">
 
 hashFrag is a scalable command-line tool to help users address homology-based data leakage during model development. The general workflow involves identifying “candidate” pairs of sequences exhibiting high similarity with [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi), filtering these candidates based on a specified similarity threshold, and then using the resulting homology information to mitigate the potential occurrences of data leakage in existing or newly-created splits. 
 
@@ -14,6 +13,11 @@ Local alignment scores are used to quantify the degree of homology between a pai
 # Installation
 
 It is recommended to execute hashFrag in a `conda` or `virtualenv` environment with Python version 3.10.
+
+pip install:
+```
+pip install hashFrag
+```
 
 Clone the repository using the following command:
 ```

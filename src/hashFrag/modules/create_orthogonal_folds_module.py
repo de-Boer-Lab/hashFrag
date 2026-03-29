@@ -3,7 +3,7 @@ import gzip
 import random
 import logging
 from collections import defaultdict
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 
 def run(args):
 

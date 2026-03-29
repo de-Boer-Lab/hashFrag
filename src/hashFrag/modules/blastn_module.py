@@ -1,6 +1,6 @@
 import os
 import subprocess
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 from glob import glob
 import logging
 from pathlib import Path

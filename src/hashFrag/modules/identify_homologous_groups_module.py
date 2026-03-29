@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from collections import defaultdict
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 import logging
 
 def get_symmetric_adjacency_dict(adjacency_dict):

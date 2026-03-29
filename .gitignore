@@ -10,6 +10,16 @@
 # BLAST output files
 *.blastdb.*
 *.blastn.*
+*.fa
+*.tar.gz
+*.whl
+
+*.egg-info
+
+Makefile
+make.*
+
+_build
 
 # Python compiled files and directories
 .ipynb_checkpoints/
@@ -20,3 +30,4 @@ __pycache__/
 
 # readthedocs
 docs/build/
+data/example_test_split.filtered.fa

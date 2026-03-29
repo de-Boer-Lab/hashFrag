@@ -2,11 +2,11 @@ import os
 import logging
 import argparse
 
-from modules.blastn_module import run as hashFrag_blastn
-from modules.process_blast_results_module import run as hashFrag_process_blast_results
-from modules.filter_candidates_module import run as hashFrag_filter_candidates
-from modules.identify_homologous_groups_module import run as hashFrag_identify_groups
-from modules.create_orthogonal_splits_module import run as hashFrag_create_orthosplits
+from hashFrag.modules.blastn_module import run as hashFrag_blastn
+from hashFrag.modules.process_blast_results_module import run as hashFrag_process_blast_results
+from hashFrag.modules.filter_candidates_module import run as hashFrag_filter_candidates
+from hashFrag.modules.identify_homologous_groups_module import run as hashFrag_identify_groups
+from hashFrag.modules.create_orthogonal_splits_module import run as hashFrag_create_orthosplits
 
 def run(args):
 

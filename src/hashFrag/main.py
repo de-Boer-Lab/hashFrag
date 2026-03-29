@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-
 import os
 import json
 import argparse
 import importlib
 
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 
 with open(os.path.join(os.path.dirname(__file__),"messages.json"), "r") as f:
     messages_dict = json.load(f)
@@ -37,7 +35,7 @@ def main():
     blast_parser.add_argument('-T','--threads',type=int,default=1,help=messages_dict["blastn_module"]["args"]["threads"])
     blast_parser.add_argument('--force', action='store_true', help=messages_dict["blastn_module"]["args"]["force"])
     blast_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
-    blast_parser.set_defaults(func=lambda args: importlib.import_module("modules.blastn_module").run(args))
+    blast_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.blastn_module").run(args))
     # blast_parser.set_defaults(func=importlib.import_module("blastn_module").run)
 
     # blastn_array_module
@@ -71,7 +69,7 @@ def main():
     blast_array_parser.add_argument('--debug',action='store_true',help=messages_dict["blastn_array_module"]["args"]["debug"])
     blast_array_parser.add_argument('--compress',action='store_true',help=messages_dict["blastn_array_module"]["args"]["compress"])
     blast_array_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
-    blast_array_parser.set_defaults(func=lambda args: importlib.import_module("modules.blastn_array_module").run(args))
+    blast_array_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.blastn_array_module").run(args))
 
     # process_blast_results_module
     processing_parser = subparsers.add_parser("process_blast_results_module",description=messages_dict["blastn_module"]["description"],help=messages_dict["blastn_module"]["help"])
@@ -82,21 +80,21 @@ def main():
     processing_parser.add_argument('-p','--penalty',type=int,default=-1,help=messages_dict["blastn_module"]["args"]["penalty"])
     processing_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["blastn_module"]["args"]["reward"])
     processing_parser.add_argument('--processed-blastn-path',type=str,required=True,help=messages_dict["blastn_module"]["args"]["train_fasta_path"])
-    processing_parser.set_defaults(func=lambda args: importlib.import_module("modules.process_blast_results_module").run(args))
+    processing_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.process_blast_results_module").run(args))
 
     # filter_candidates_module
     fp_parser = subparsers.add_parser("filter_candidates_module",description=messages_dict["filter_candidates_module"]["description"],help=messages_dict["filter_candidates_module"]["help"])
     fp_parser.add_argument('-i','--input-path',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["input_path"])
     fp_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     fp_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["filter_candidates_module"]["args"]["output_dir"])
-    fp_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_candidates_module").run(args))
+    fp_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.filter_candidates_module").run(args))
 
     # filter_test_split_module
     filter_parser = subparsers.add_parser("filter_test_split_module",description=messages_dict["filter_test_split_module"]["description"],help=messages_dict["filter_test_split_module"]["help"])
     filter_parser.add_argument('--train-fasta-path',type=str,required=True,help=messages_dict["filter_test_split_module"]["args"]["train_fasta_path"])
     filter_parser.add_argument('--test-fasta-path',type=str,required=True,help=messages_dict["filter_test_split_module"]["args"]["test_fasta_path"])
     filter_parser.add_argument('--hits-path',type=str,required=True,help=messages_dict["filter_test_split_module"]["args"]["hits_path"])
-    filter_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_test_split_module").run(args))
+    filter_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.filter_test_split_module").run(args))
 
     # stratify_test_split_module
     stratify_parser = subparsers.add_parser("stratify_test_split_module",description=messages_dict["stratify_test_split_module"]["description"],help=messages_dict["stratify_test_split_module"]["help"])
@@ -108,14 +106,14 @@ def main():
     stratify_parser.add_argument('-r','--reward',type=int,default=1,help=messages_dict["stratify_test_split_module"]["args"]["reward"])
     stratify_parser.add_argument('-s','--step',type=int,default=10,help=messages_dict["stratify_test_split_module"]["args"]["step"])
     stratify_parser.add_argument('-o','--output-path',type=str,required=True,help=messages_dict["stratify_test_split_module"]["args"]["output_path"])
-    stratify_parser.set_defaults(func=lambda args: importlib.import_module("modules.stratify_test_split_module").run(args))
+    stratify_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.stratify_test_split_module").run(args))
 
     # identify_homologous_groups_module
     homology_parser = subparsers.add_parser("identify_homologous_groups_module",description=messages_dict["identify_homologous_groups_module"]["description"],help=messages_dict["identify_homologous_groups_module"]["help"])
     homology_parser.add_argument('-i','--hits-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["hits_path"])
     homology_parser.add_argument('-t','--threshold',type=float,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     homology_parser.add_argument('-o','--output-path',type=str,required=True,help=messages_dict["identify_homologous_groups_module"]["args"]["output_path"])
-    homology_parser.set_defaults(func=lambda args: importlib.import_module("modules.identify_homologous_groups_module").run(args))
+    homology_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.identify_homologous_groups_module").run(args))
 
     # create_orthogonal_splits_module
     orthosplit_parser = subparsers.add_parser("create_orthogonal_splits_module",description=messages_dict["create_orthogonal_splits_module"]["description"],help=messages_dict["create_orthogonal_splits_module"]["help"])
@@ -125,7 +123,7 @@ def main():
     orthosplit_parser.add_argument('-n','--n-splits',type=int,default=1,help=messages_dict["create_orthogonal_splits_module"]["args"]["n_splits"])
     orthosplit_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_splits_module"]["args"]["seed"])
     orthosplit_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["create_orthogonal_splits_module"]["args"]["output_dir"])
-    orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits_module").run(args))
+    orthosplit_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.create_orthogonal_splits_module").run(args))
 
     # create_orthogonal_folds_module
     orthofold_parser = subparsers.add_parser("create_orthogonal_folds_module",description=messages_dict["create_orthogonal_folds_module"]["description"],help=messages_dict["create_orthogonal_splits_module"]["help"])
@@ -133,7 +131,7 @@ def main():
     orthofold_parser.add_argument('-f','--folds',type=int,default=5,help=messages_dict["create_orthogonal_folds_module"]["args"]["folds"])
     orthofold_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_folds_module"]["args"]["seed"])
     orthofold_parser.add_argument('-o','--output-dir',type=str,required=True,help=messages_dict["create_orthogonal_folds_module"]["args"]["output_dir"])
-    orthofold_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_folds_module").run(args))
+    orthofold_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.create_orthogonal_folds_module").run(args))
 
     # filter_existing_splits
     filter_pipeline_parser = subparsers.add_parser("filter_existing_splits",description=messages_dict["filter_existing_splits"]["description"],help=messages_dict["filter_existing_splits"]["help"])
@@ -160,7 +158,7 @@ def main():
     filter_pipeline_parser.add_argument('--force', action='store_true', help=messages_dict["blastn_module"]["args"]["force"])
     filter_pipeline_parser.add_argument('-t','--threshold',type=int,required=True,help=messages_dict["filter_candidates_module"]["args"]["threshold"])
     filter_pipeline_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
-    filter_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.filter_existing_splits").run(args))
+    filter_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.filter_existing_splits").run(args))
 
     # stratify_test_split
     stratify_pipeline_parser = subparsers.add_parser("stratify_test_split",description=messages_dict["stratify_test_split"]["description"],help=messages_dict["stratify_test_split"]["help"])
@@ -186,7 +184,7 @@ def main():
     stratify_pipeline_parser.add_argument('--force', action='store_true', help=messages_dict["blastn_module"]["args"]["force"])
     stratify_pipeline_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["blastn_module"]["args"]["output_dir"])
     stratify_pipeline_parser.add_argument('-s','--step',type=int,default=10,help=messages_dict["stratify_test_split_module"]["args"]["step"])
-    stratify_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.stratify_test_split").run(args))
+    stratify_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.stratify_test_split").run(args))
 
     # create_orthogonal_splits
     orthosplit_pipeline_parser = subparsers.add_parser("create_orthogonal_splits",description=messages_dict["create_orthogonal_splits"]["description"],help=messages_dict["create_orthogonal_splits"]["help"])
@@ -215,7 +213,7 @@ def main():
     orthosplit_pipeline_parser.add_argument('-s','--seed',type=int,default=21,help=messages_dict["create_orthogonal_splits_module"]["args"]["seed"])
     orthosplit_pipeline_parser.add_argument('--force', action='store_true', help=messages_dict["blastn_module"]["args"]["force"])
     orthosplit_pipeline_parser.add_argument('-o','--output-dir',type=str,default=".",help=messages_dict["create_orthogonal_splits_module"]["args"]["output_dir"])
-    orthosplit_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("modules.create_orthogonal_splits").run(args))
+    orthosplit_pipeline_parser.set_defaults(func=lambda args: importlib.import_module("hashFrag.modules.create_orthogonal_splits").run(args))
     
     args = parser.parse_args()
 

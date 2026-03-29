@@ -2,7 +2,7 @@ import gzip
 import pandas as pd
 from Bio import SeqIO
 from collections import defaultdict
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 import logging
 
 def run(args):
@@ -10,7 +10,7 @@ def run(args):
     logger = logging.getLogger(__name__.replace("modules.",""))
     logger.info("Calling module...")
     hits_dict = defaultdict(set)
-    for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000):
+    for chunk_df in pd.read_csv(args.hits_path,sep="\t",chunksize=250_000,names=["id_i","id_j","score"]):
         for qseqid, sseqid in zip(chunk_df["id_i"],chunk_df["id_j"]):
             hits_dict[qseqid].add(sseqid)
             hits_dict[sseqid].add(qseqid) # symmetric dictionary

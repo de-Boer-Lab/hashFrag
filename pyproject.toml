@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hashFrag"
+version = "1.0.1"
+license = {text = "MIT"}
+authors = [
+  { name="Brett Kiyota", email="brett.kiyota@ubc.ca" },
+  { name="Abdul Muntakim Rafi" }
+]
+description = "A command-line tool to mitigate homology-based data leakage in sequence-to-expression models"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "biopython>=1.84",
+    "numpy>=2.2.1",
+    "pandas>=2.2.3",
+    "python-dateutil>=2.9.0",
+    "pytz>=2024.2",
+    "six>=1.17.0",
+    "texttable>=1.7.0",
+    "tzdata>=2024.2"
+]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx>=7.4.7",
+    "myst-parser>=3.0.1",
+    "sphinx-rtd-theme>=2.0.0"
+]
+
+[project.scripts]
+hashFrag = "hashFrag.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

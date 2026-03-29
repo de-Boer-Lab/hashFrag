@@ -2,17 +2,17 @@ import os
 import logging
 import argparse
 
-import utils.helper_functions as helper
+import hashFrag.utils.helper_functions as helper
 
-from modules.blastn_module import run as hashFrag_blastn
-from modules.process_blast_results_module import run as hashFrag_process_blast_results
-from modules.filter_candidates_module import run as hashFrag_filter_candidates
-from modules.filter_test_split_module import run as hashFrag_filter_test_split
+from hashFrag.modules.blastn_module import run as hashFrag_blastn
+from hashFrag.modules.process_blast_results_module import run as hashFrag_process_blast_results
+from hashFrag.modules.stratify_test_split_module import run as hashFrag_stratify_test_split
+    
 
 def run(args):
 
     logger = logging.getLogger("pipeline")
-    logger.info("Initializing `filter_existing_splits` pipeline.\n")
+    logger.info("Initializing `stratify_test_split` pipeline.\n")
 
     label = "hashFrag"
 
@@ -56,19 +56,13 @@ def run(args):
     )
     hashFrag_process_blast_results(process_blast_results_args)
 
-    filter_candidates_args = argparse.Namespace(
-        input_path=processed_blast_path,
-        threshold=args.threshold,
-        output_dir=args.output_dir
-    )
-    hashFrag_filter_candidates(filter_candidates_args)
-    hits_path = os.path.join(args.output_dir,f"hashFrag.similar_pairs.tsv")
-
-    filter_test_split_args = argparse.Namespace(
-        train_fasta_path=args.train_fasta_path,
+    stratified_path = os.path.join(args.output_dir,f"{label}.stratified_test_split.tsv")
+    stratify_test_split_args = argparse.Namespace(
         test_fasta_path=args.test_fasta_path,
-        hits_path=hits_path
+        input_path=processed_blast_path,
+        step=args.step,
+        output_path=stratified_path
     )
-    hashFrag_filter_test_split(filter_test_split_args)
+    hashFrag_stratify_test_split(stratify_test_split_args)
 
-    logger.info("Completed execution of the pipeline to filter existing data splits!")
+    logger.info("Completed execution of the pipeline to stratify the test split by alignment score!")
