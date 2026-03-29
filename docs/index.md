@@ -34,11 +34,11 @@ Local alignment scores are used to quantify the degree of homology between a pai
 
 There are 3 primary use cases of hashFrag:
 
-1. [Filter leakage from existing splits](basic_usage.md#filter-existing-splits): Remove test sequences homologous to the training set  
+1. **Filter leakage from existing splits**: Remove test sequences homologous to the training set  
 
-2. [Stratify test set by homology](basic_usage.md#stratify-test-split): Analyze model performance across different similarity levels  
+2. **Stratify test set by homology**: Analyze model performance across different similarity levels  
 
-3. [Create homology-aware splits](basic_usage.md#creating-orthogonal-splits): Generate train/test splits with no homology leakage  
+3. **Create homology-aware splits**](basic_usage.md#creating-orthogonal-splits)**: Generate train/test splits with no homology leakage  
 
 ---
 

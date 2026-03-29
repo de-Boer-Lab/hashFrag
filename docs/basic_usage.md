@@ -43,9 +43,9 @@ If both sequence orentations already exist in the input FASTA file(s), make sure
 
 * Note that a warning will be generated if there already exists sequences with the `_Reversed` suffix and the `--skip-revcomp` argument is NOT specified.
 
-# Quickstart
+# hashFrag commands
 
-## Filter existing splits {#filter-existing-splits}
+## Filter existing splits
 
 Filter sequences in the test split exhibiting homology with any sequences in the train split
 ```
@@ -85,7 +85,7 @@ hashFrag filter_existing_splits \
 
 </details>
 
-## Stratify test split {#stratify-test-split}
+## Stratify test split
 
 Stratify the test split sequences into an arbitrary number of levels based on their maximum alignment scores to the train split sequences. 
 ```
@@ -128,7 +128,7 @@ hashFrag stratify_test_split \
 
 </details>
 
-## Creating orthogonal splits {#creating-orthogonal-splits}
+## Creating orthogonal splits
 
 Create homology-aware (i.g., orthogonal) train-test data splits.
 

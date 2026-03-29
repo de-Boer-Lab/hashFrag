@@ -21,4 +21,4 @@ sphinx:
 
 # Optionally, tell RTD to build using MyST (Markdown) support
 formats:
-  - html
+  - htmlzip
