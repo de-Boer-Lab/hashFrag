@@ -22,6 +22,7 @@ make.*
 _build
 _static
 _templates
+tutorial/
 
 # Python compiled files and directories
 .ipynb_checkpoints/
