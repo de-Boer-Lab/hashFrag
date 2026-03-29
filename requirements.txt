@@ -6,6 +6,6 @@ pytz==2024.2
 six==1.17.0
 texttable==1.7.0
 tzdata==2024.2
-sphinx==7.4.7
-myst-parser==3.0.1
-sphinx-rtd-theme==2.0.0
+sphinx>=7.4.7
+myst-parser>=4.0.0
+sphinx-rtd-theme>=2.0.0
