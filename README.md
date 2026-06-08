@@ -17,4 +17,4 @@ Full documentation is available on [Read the Docs](https://hashfrag.readthedocs.
 
 # Paper
 
-Check out our [preprint on bioRxiv](https://www.biorxiv.org/content/10.1101/2025.01.22.634321v1) titled, "*Detecting and avoiding homology-based data leakage in genome-trained sequence models*", for more details.
+Check out our [preprint on bioRxiv](https://www.biorxiv.org/content/10.1101/2025.01.22.634321v2) titled, "*Characterizing homology-induced data leakage and memorization in genome-trained sequence models*", for more details.
